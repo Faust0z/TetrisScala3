@@ -3,11 +3,11 @@ package scalatetris
 import scala.swing.TextArea
 
 trait Display {
-  def render(value: String);
+  def render(value: String): Unit
 }
 
 class SwingDisplay(area: TextArea) extends Display {
-  def render(value: String) {
-      area.text = value;
+  def render(value: String) : Unit = {
+      area.text = value
   }
 }

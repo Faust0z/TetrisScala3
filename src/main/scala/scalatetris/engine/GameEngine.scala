@@ -17,7 +17,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   private var future: List[Board] = Nil
 
-  def moveDown() {
+  def moveDown(): Unit = {
     if (!move(s => s.moveDown())) {
       val (points, numberOfRemovedRows) = removeFullRows(board.points)
       board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
@@ -36,23 +36,23 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     else false
   }
 
-  def moveLeft() {
+  def moveLeft(): Unit = {
     move(s => s.moveLeft())
   }
 
-  def moveRight() {
-    move(s => s.moveRight)
+  def moveRight(): Unit = {
+    move(s => s.moveRight())
   }
 
-  def rotateLeft() {
-    move(s => s.rotateLeft)
+  def rotateLeft(): Unit = {
+    move(s => s.rotateLeft())
   }
 
-  def rotateRight() {
-    move(s => s.rotateRight)
+  def rotateRight(): Unit = {
+    move(s => s.rotateRight())
   }
 
-  def restart() {
+  def restart(): Unit = {
     board =
       new Board(
         boardSize,
@@ -70,7 +70,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
         board.draw()
     }
 
-  def forceNewStone() {
+  def forceNewStone(): Unit = {
     board = board.forceNewStone(stoneFactory.createRandomStone())
     history = board :: history
   }
@@ -83,7 +83,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   def statistics = board.statistics
 
-  def drawBoardOnly() = board.drawBoardOnly
+  def drawBoardOnly() = board.drawBoardOnly()
 
   def pause() = isRunning = false
 
@@ -92,7 +92,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     future = Nil
   }
 
-  def backwardInTime() {
+  def backwardInTime(): Unit = {
     history match {
       case Nil => ()
       case head :: tail =>
@@ -103,7 +103,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     pause()
   }
 
-  def backIntoTheFuture() {
+  def backIntoTheFuture(): Unit = {
     future match {
       case Nil => ()
       case head :: tail =>

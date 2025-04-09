@@ -6,13 +6,13 @@ object Stone {
 
 object Square {
   def apply(start: Point): Stone =
-    Stone(List(start,          start.moveRight,
-               start.moveDown, start.moveDown.moveRight))
+    Stone(List(start.moveRight(), start.moveDown(), start.moveDown().moveRight())
+    )
 }
 
 object Line {
   def apply(start: Point): Stone =
-    Stone(List(start, start.moveDown, start.moveDown.moveDown, start.moveDown.moveDown.moveDown))
+    Stone(List(start, start.moveDown(), start.moveDown().moveDown(), start.moveDown().moveDown().moveDown()))
 }
 
 object LetterLLeft {
@@ -94,6 +94,6 @@ case class Stone(val points: List[Point]) {
   
   def isInFrame(frame: Size) = points.forall(_.isInFrame(frame))
                                 
-  def isOnTop(): Boolean = points.exists(_.isOnTop)
+  def isOnTop(): Boolean = points.exists(_.isOnTop())
   
 }

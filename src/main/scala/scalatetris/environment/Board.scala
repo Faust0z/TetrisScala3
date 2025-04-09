@@ -8,14 +8,15 @@ class Board private(
                      val preview: Stone,
                      val statistics: Statistics,
                      val isGameRunning: Boolean) {
-  def this(size: Size, firstStone: Stone, firstPreview: Stone) {
+  def this(size: Size, firstStone: Stone, firstPreview: Stone) =
     this(
       size,
       List[Stone](firstStone.toTopCenter(Point(size.width / 2, 0))),
       firstPreview,
       Statistics(Calendar.getInstance().getTime(), 0),
-      true)
-  }
+      true
+    )
+
 
   private def topCenter = Point(size.width / 2, 0)
 
@@ -25,7 +26,7 @@ class Board private(
 
   def update(stones: List[Stone], numberOfRowsRemoved: Int, preview: Stone) = {
     if (stones.exists(s => s.doesCollide(this.preview)) ||
-      (!stones.isEmpty && stones.head.isOnTop)) {
+      (!stones.isEmpty && stones.head.isOnTop())) {
       new Board(size, stones, preview, statistics, false)
     }
     else {

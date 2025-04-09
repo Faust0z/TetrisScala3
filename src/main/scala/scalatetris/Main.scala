@@ -1,15 +1,18 @@
 package scalatetris
 
-import akka.actor.{ActorSystem, Props}
-import scalatetris.EngineEvent._
+import akka.actor.typed.ActorSystem
 import scalatetris.UserInteraction._
 import scalatetris.engine.GameEngine
 import scalatetris.environment._
 
 import java.awt.Font
-import scala.concurrent.duration.Duration
 import scala.swing.{Dimension, Frame, MainFrame, SimpleSwingApplication, TextArea}
 import scala.swing.event.{Key, KeyPressed}
+
+import akka.util.Timeout
+
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext
 
 object Main extends SimpleSwingApplication {
   def top: Frame = {
@@ -30,37 +33,28 @@ object Main extends SimpleSwingApplication {
     val drawing = engine.draw()
     display.render(drawing)
 
-    val system = ActorSystem()
-    val tetris = {
-      system.actorOf(Props(new Tetris(engine, display)), name = "tetris")
+    val system: ActorSystem[Tetris.Command] = ActorSystem(Tetris(engine, display), "ScalaTetrisSystem")
+    val tetris = system.systemActorOf(Tetris(engine, display), "tetris")
+
+
+    implicit val timeout: Timeout = 3.seconds
+    implicit val ec: ExecutionContext = system.executionContext
+    system.scheduler.scheduleAtFixedRate(500.millis, 100.millis) {
+      () => system ! Tetris.Tick
     }
-    import system.dispatcher
-    system.scheduler.schedule(
-      Duration(500, "ms"),
-      Duration(100, "ms"),
-      tetris,
-      Tick)
 
     listenTo(area.keys)
     reactions += {
       case key: KeyPressed => {
         key.key match {
-          case Key.A =>
-            tetris ! Left
-          case Key.S =>
-            tetris ! Down
-          case Key.D =>
-            tetris ! Right
-          case Key.Q =>
-            tetris ! RotateLeft
-          case Key.E =>
-            tetris ! RotateRight
-          case Key.R =>
-            tetris ! Restart
-          case Key.P =>
-            tetris ! Pause
-          case Key.C =>
-            tetris ! Continue
+          case Key.A => tetris ! Tetris.Left
+          case Key.S => tetris ! Tetris.Down
+          case Key.D => tetris ! Tetris.Right
+          case Key.Q => tetris ! Tetris.RotateLeft
+          case Key.E => tetris ! Tetris.RotateRight
+          case Key.R => tetris ! Tetris.Restart
+          case Key.P => tetris ! Tetris.Pause
+          case Key.C => tetris ! Tetris.Continue
           case _ => ()
         }
       }
