@@ -2,99 +2,87 @@ package scalatetris.engine
 
 import scalatetris.environment._
 
-import java.util.Calendar
-
 sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
-  private var board =
-    new Board(
-      boardSize,
-      stoneFactory.createRandomStone(),
-      stoneFactory.createRandomStone())
+  private var board: Board = new Board(
+    boardSize,
+    stoneFactory.createRandomStone(),
+    stoneFactory.createRandomStone()
+  )
 
-  private var isRunning = true
-
+  private var isRunning: Boolean = true
   private var history: List[Board] = board :: Nil
-
   private var future: List[Board] = Nil
 
   def moveDown(): Unit = {
-    if (!move(s => s.moveDown())) {
+    if (!move(_.moveDown())) {
       val (points, numberOfRemovedRows) = removeFullRows(board.points)
       board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
       history = board :: history
     }
   }
 
-  private def move(action: (Stone) => Stone) = {
+  private def move(action: Stone => Stone): Boolean = {
     val oldStone = board.stones.head
     val newStone = action(oldStone)
-    if (newStone.isInFrame(board.size) && !board.stones.tail.exists(s => s.doesCollide(newStone))) {
+
+    if (newStone.isInFrame(board.size) && !board.stones.tail.exists(_.doesCollide(newStone))) {
       board = board.update(newStone :: board.stones.tail)
       history = board :: history
       true
+    } else {
+      false
     }
-    else false
   }
 
-  def moveLeft(): Unit = {
-    move(s => s.moveLeft())
-  }
+  def moveLeft(): Unit = move(_.moveLeft())
 
-  def moveRight(): Unit = {
-    move(s => s.moveRight())
-  }
+  def moveRight(): Unit = move(_.moveRight())
 
-  def rotateLeft(): Unit = {
-    move(s => s.rotateLeft())
-  }
+  def rotateLeft(): Unit = move(_.rotateLeft())
 
-  def rotateRight(): Unit = {
-    move(s => s.rotateRight())
-  }
+  def rotateRight(): Unit = move(_.rotateRight())
 
   def restart(): Unit = {
-    board =
-      new Board(
-        boardSize,
-        stoneFactory.createRandomStone(),
-        stoneFactory.createRandomStone())
+    board = new Board(
+      boardSize,
+      stoneFactory.createRandomStone(),
+      stoneFactory.createRandomStone()
+    )
     history = board :: Nil
     future = Nil
   }
 
-  def draw() =
+  def draw(): String =
     if (isRunning || !board.isGameRunning)
       board.draw()
-    else {
-      "GAME PAUSED\n" +
-        board.draw()
-    }
+    else
+      "GAME PAUSED\n" + board.draw()
 
   def forceNewStone(): Unit = {
     board = board.forceNewStone(stoneFactory.createRandomStone())
     history = board :: history
   }
 
-  def isGameRunning = board.isGameRunning && isRunning
+  def isGameRunning: Boolean = board.isGameRunning && isRunning
 
-  def stones = board.stones
+  def stones: List[Stone] = board.stones
 
-  def points = board.points
+  def points: List[Point] = board.points
 
-  def statistics = board.statistics
+  def statistics: Statistics = board.statistics
 
-  def drawBoardOnly() = board.drawBoardOnly()
+  def drawBoardOnly(): String = board.drawBoardOnly()
 
-  def pause() = isRunning = false
+  def pause(): Unit = isRunning = false
 
-  def continue() = {
+  def continue(): Unit = {
     isRunning = true
     future = Nil
   }
 
   def backwardInTime(): Unit = {
     history match {
-      case Nil => ()
+      case Nil =>
       case head :: tail =>
         future = board :: future
         board = head
@@ -105,7 +93,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   def backIntoTheFuture(): Unit = {
     future match {
-      case Nil => ()
+      case Nil =>
       case head :: tail =>
         history = board :: history
         board = head
@@ -114,18 +102,16 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     pause()
   }
 
-  private def removeFullRows(points: List[Point],
-                             height: Int = board.size.height): (List[Point], Int) = points match {
-    case Nil => (Nil, 0)
-    case _ => val (pointsInRow, pointsNotInRow) = points.partition(_.y == height)
-      val (rows, numberOfRemovedRows) = removeFullRows(pointsNotInRow, height - 1)
-      if (pointsInRow.length == board.size.width) {
-        (rows.map(_.moveDown()), numberOfRemovedRows + 1)
-      }
-      else {
-        (pointsInRow ::: rows, numberOfRemovedRows)
-      }
-  }
+  private def removeFullRows(points: List[Point], height: Int = board.size.height): (List[Point], Int) =
+    points match {
+      case Nil => (Nil, 0)
+      case _ =>
+        val (pointsInRow, pointsNotInRow) = points.partition(_.y == height)
+        val (rows, numberOfRemovedRows) = removeFullRows(pointsNotInRow, height - 1)
+        if (pointsInRow.length == board.size.width) {
+          (rows.map(_.moveDown()), numberOfRemovedRows + 1)
+        } else {
+          (pointsInRow ::: rows, numberOfRemovedRows)
+        }
+    }
 }
-  
-

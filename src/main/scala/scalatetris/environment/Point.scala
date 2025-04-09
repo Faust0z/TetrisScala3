@@ -1,49 +1,47 @@
 package scalatetris.environment
 
-case class Point(val x: Int, val y: Int) {
+case class Point(x: Int, y: Int) {
 
-  def moveDown() = Point(x, y + 1)
+  def moveDown(): Point = Point(x, y + 1)
 
-  def moveLeft() = Point(x - 1, y)
+  def moveLeft(): Point = Point(x - 1, y)
 
-  def moveRight() = Point(x + 1, y)
+  def moveRight(): Point = Point(x + 1, y)
 
-  def rotateAroundCenterLeft(center: Point) = {
-    val diff = this - center
-    val rotated = diff.rotateLeft()
+  def rotateAroundCenterLeft(center: Point): Point = {
+    val rotated = (this - center).rotateLeft()
     center + rotated
   }
 
-  def rotateAroundCenterRight(center: Point) = {
-    val diff = this - center
-    val rotated = diff.rotateRight()
+  def rotateAroundCenterRight(center: Point): Point = {
+    val rotated = (this - center).rotateRight()
     center + rotated
   }
 
-  private[environment] def rotateLeft() = rotate(math.Pi / 2)
+  private[environment] def rotateLeft(): Point = rotate(math.Pi / 2)
 
-  private[environment] def rotateRight() = rotate(-math.Pi / 2)
+  private[environment] def rotateRight(): Point = rotate(-math.Pi / 2)
 
-  private def rotate(angle: Double) = {
-    val x = this.x * math.cos(angle) - this.y * math.sin(angle);
-    val y = this.x * math.sin(angle) + this.y * math.cos(angle);
-    Point(math.round(x).asInstanceOf[Int], math.round(y).asInstanceOf[Int])
+  private def rotate(angle: Double): Point = {
+    val newX = (x * math.cos(angle) - y * math.sin(angle)).round.toInt
+    val newY = (x * math.sin(angle) + y * math.cos(angle)).round.toInt
+    Point(newX, newY)
   }
 
-  def max(other: Point) = Point(math.max(x, other.x), math.max(y, other.y))
+  def max(other: Point): Point = Point(math.max(x, other.x), math.max(y, other.y))
 
-  def min(other: Point) = Point(math.min(x, other.x), math.min(y, other.y))
+  def min(other: Point): Point = Point(math.min(x, other.x), math.min(y, other.y))
 
-  def isInFrame(frame: Size) = (0 until frame.width).contains(x) &&
-    (0 until frame.height).contains(y)
+  def isInFrame(frame: Size): Boolean =
+    x >= 0 && x < frame.width && y >= 0 && y < frame.height
 
-  def isOnTop(): Boolean = y == 0
+  def isOnTop: Boolean = y == 0
 
-  def +(other: Point) = Point(x + other.x, y + other.y)
+  def +(other: Point): Point = Point(x + other.x, y + other.y)
 
-  def -(other: Point) = Point(x - other.x, y - other.y)
+  def -(other: Point): Point = Point(x - other.x, y - other.y)
 
-  def *(factor: Int) = Point(x * factor, y * factor)
+  def *(factor: Int): Point = Point(x * factor, y * factor)
 
-  def /(divisor: Int) = Point(x / divisor, y / divisor)
+  def /(divisor: Int): Point = Point(x / divisor, y / divisor)
 }

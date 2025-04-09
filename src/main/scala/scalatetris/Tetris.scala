@@ -1,13 +1,11 @@
 package scalatetris
 
-import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 import scalatetris.EngineEvent._
-import scalatetris.UserInteraction._
 import scalatetris.engine.GameEngine
 
 object Tetris {
-  // Define the messages the actor can receive
   sealed trait Command
 
   case object Continue extends Command
@@ -40,6 +38,7 @@ object Tetris {
 
         case Restart if !engine.isGameRunning =>
           engine.restart()
+          display.render(engine.draw())
           Behaviors.same
 
         case Left if !engine.isGameRunning =>
@@ -82,13 +81,17 @@ object Tetris {
           display.render(engine.draw())
           Behaviors.same
 
-        case Tick =>
+        case Tick if engine.isGameRunning =>
           tickCounts += 1
           if (tickCounts % 5 == 0) {
             engine.moveDown()
           }
           display.render(engine.draw())
           Behaviors.same
+
+        // Caso default para errores inesperados, tuve que agregarlo para que el reset funcione bien
+        case _ =>
+          Behaviors.unhandled
       }
     }
 }

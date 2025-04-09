@@ -7,5 +7,5 @@ object UserInteraction extends Enumeration {
 
 object EngineEvent extends Enumeration {
   type EngineEvent = Value
-  val Tick = Value
+  val Tick: Value = Value
 }

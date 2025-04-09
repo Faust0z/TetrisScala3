@@ -45,7 +45,7 @@ object Main extends SimpleSwingApplication {
 
     listenTo(area.keys)
     reactions += {
-      case key: KeyPressed => {
+      case key: KeyPressed =>
         key.key match {
           case Key.A => tetris ! Tetris.Left
           case Key.S => tetris ! Tetris.Down
@@ -57,7 +57,6 @@ object Main extends SimpleSwingApplication {
           case Key.C => tetris ! Tetris.Continue
           case _ => ()
         }
-      }
     }
 
     frame
