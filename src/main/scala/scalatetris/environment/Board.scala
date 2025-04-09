@@ -61,11 +61,18 @@ class Board private (
     for (y <- 0 until size.height) {
       builder.append("|")
       for (x <- 0 until size.width) {
-        builder.append(if (occupiedPoints.contains((x, y))) "x" else " ")
+        // Usa bloques para representar las piezas
+        builder.append(
+          if (occupiedPoints.contains((x, y))) "🟥"
+          else " " // Fondo vacío
+        )
       }
       builder.append("|\n")
     }
     builder.append("-" * (size.width + 2) + "\n")
     builder.toString()
   }
+
+  //Dibuja las formitas X
+
 }
