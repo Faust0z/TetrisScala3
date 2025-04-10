@@ -2,12 +2,12 @@ package scalatetris.environment
 
 import java.util.Calendar
 
-class Board private (
-                      val size: Size,
-                      val stones: List[Stone],
-                      val preview: Stone,
-                      val statistics: Statistics,
-                      val isGameRunning: Boolean) {
+class Board private(
+                     val size: Size,
+                     val stones: List[Stone],
+                     val preview: Stone,
+                     val statistics: Statistics,
+                     val isGameRunning: Boolean) {
 
 
   def this(size: Size, firstStone: Stone, firstPreview: Stone) =
@@ -15,7 +15,7 @@ class Board private (
       size,
       List(firstStone.toTopCenter(Point(size.width / 2, 0))),
       firstPreview,
-      Statistics(Calendar.getInstance().getTime, 0),
+      Statistics(Calendar.getInstance().getTime, 0, 0),
       isGameRunning = true
     )
 
@@ -24,7 +24,7 @@ class Board private (
   def points: List[Point] = stones.flatMap(_.points)
 
   def update(stones: List[Stone]): Board =
-    new Board(size, stones, preview, statistics, isGameRunning)
+    new Board(size, stones, preview, statistics.addTimePoints(), isGameRunning)
 
   def update(stones: List[Stone], numberOfRowsRemoved: Int, preview: Stone): Board = {
     val gameOver = stones.exists(_.doesCollide(this.preview)) || stones.headOption.exists(_.isOnTop)
