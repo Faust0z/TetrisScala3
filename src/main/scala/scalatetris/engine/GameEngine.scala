@@ -2,6 +2,7 @@ package scalatetris.engine
 
 import scalatetris.environment._
 
+//le paso por parametro el tamaño del tablero y la fabrica de piezas de tetris
 sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   private var board: Board = new Board(
     boardSize,
@@ -9,10 +10,19 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     stoneFactory.createRandomStone()
   )
 
+  //isRunning: si el juego está activo o en pausa
   private var isRunning: Boolean = true
+  //history: lista de tableros anteriores (para "deshacer").
+  //el board es el tablero actual
   private var history: List[Board] = board :: Nil
+  //future: lista de tableros a los que se puede volver (para "rehacer").
   private var future: List[Board] = Nil
 
+
+  /*
+  Intenta mover la pieza activa hacia abajo, sino puede moverse (colisión), fija la pieza y genera una nueva.
+  si hay una fila completa la elimina con removeFullRows.
+   */
   def moveDown(): Unit = {
     if (!move(_.moveDown())) {
       val (points, numberOfRemovedRows) = removeFullRows(board.points)
@@ -21,6 +31,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     }
   }
 
+  //move() va a chequear si la nueva posición esta dentro del tablero y sin colisiones.
   private def move(action: Stone => Stone): Boolean = {
     val oldStone = board.stones.head
     val newStone = action(oldStone)
@@ -34,6 +45,8 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     }
   }
 
+  //Llaman a move() con los diferentes movimientos a la pieza actual.
+  //estos movimientos estan dentro de Stone donde se especifica como se mueven la piezas
   def moveLeft(): Unit = move(_.moveLeft())
 
   def moveRight(): Unit = move(_.moveRight())
@@ -42,6 +55,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   def rotateRight(): Unit = move(_.rotateRight())
 
+  //Reinicia el tablero y limpia historial.
   def restart(): Unit = {
     board = new Board(
       boardSize,
@@ -52,17 +66,17 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     future = Nil
   }
 
-  def draw(): String =
-    if (isRunning || !board.isGameRunning)
-      board.draw()
-    else
-      "GAME PAUSED\n" + board.draw()
-
+  //fuerza la aparición de una nueva pieza.
   def forceNewStone(): Unit = {
     board = board.forceNewStone(stoneFactory.createRandomStone())
     history = board :: history
   }
 
+  def boardIsRunning: Boolean = board.isGameRunning
+
+  def IsRunning: Boolean = isRunning
+  
+  //si esta o no corriendo
   def isGameRunning: Boolean = board.isGameRunning && isRunning
 
   def stones: List[Stone] = board.stones
@@ -71,14 +85,18 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   def statistics: Statistics = board.statistics
 
-  def drawBoardOnly(): String = board.drawBoardOnly()
-
   def pause(): Unit = isRunning = false
 
   def continue(): Unit = {
     isRunning = true
     future = Nil
   }
+
+  //esta es la proxima pieza para aparecer
+  def nextStone: Stone = board.preview
+
+  //Permite al jugador retroceder y avanzar entre estados anteriores del tablero.
+  //Utiliza las listas history y future.
 
   def backwardInTime(): Unit = {
     history match {
@@ -102,6 +120,9 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     pause()
   }
 
+  //primero recorre de abajo hacia arriba.
+  //despues chequea si una fila está llena la elimina.
+  //por ultimo las filas superiores bajan una posición.
   private def removeFullRows(points: List[Point], height: Int = board.size.height): (List[Point], Int) =
     points match {
       case Nil => (Nil, 0)

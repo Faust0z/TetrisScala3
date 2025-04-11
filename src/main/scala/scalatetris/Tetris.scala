@@ -9,21 +9,13 @@ object Tetris {
   sealed trait Command
 
   case object Continue extends Command
-
   case object Restart extends Command
-
   case object Left extends Command
-
   case object Right extends Command
-
   case object Down extends Command
-
   case object RotateLeft extends Command
-
   case object RotateRight extends Command
-
   case object Pause extends Command
-
   case object Tick extends Command
 
   def apply(engine: GameEngine, display: Display): Behavior[Command] =
@@ -33,52 +25,52 @@ object Tetris {
       Behaviors.receiveMessage {
         case Continue =>
           engine.continue()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case Restart if !engine.isGameRunning =>
           engine.restart()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case Left if !engine.isGameRunning =>
           engine.backwardInTime()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case Right if !engine.isGameRunning =>
           engine.backIntoTheFuture()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case Left =>
           engine.moveLeft()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case Right =>
           engine.moveRight()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case Down =>
           engine.moveDown()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case RotateLeft =>
           engine.rotateLeft()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case RotateRight =>
           engine.rotateRight()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case Pause =>
           engine.pause()
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
         case Tick if engine.isGameRunning =>
@@ -86,10 +78,9 @@ object Tetris {
           if (tickCounts % 5 == 0) {
             engine.moveDown()
           }
-          display.render(engine.draw())
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        // Caso default para errores inesperados, tuve que agregarlo para que el reset funcione bien
         case _ =>
           Behaviors.unhandled
       }

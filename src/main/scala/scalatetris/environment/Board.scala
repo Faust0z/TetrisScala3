@@ -2,6 +2,7 @@ package scalatetris.environment
 
 import java.util.Calendar
 
+//aca se define como funciona toda la interfaz del tablero de tetris
 class Board private (
                       val size: Size,
                       val stones: List[Stone],
@@ -21,11 +22,16 @@ class Board private (
 
   private def topCenter: Point = Point(size.width / 2, 0)
 
+  //Devuelve todos los puntos ocupados en el tablero por las piezas fijadas y la actual.
   def points: List[Point] = stones.flatMap(_.points)
-
+  //aca va a actualizar el estado del tablero con la lista de piezas
   def update(stones: List[Stone]): Board =
     new Board(size, stones, preview, statistics, isGameRunning)
 
+
+    //Actualiza el tablero tras eliminar filas o insertar una nueva pieza
+    //Coloca la pieza preview en el centro como nueva piedra activa
+    //Verifica si esa pieza colisiona con otras o está demasiado arriba entonces game over.
   def update(stones: List[Stone], numberOfRowsRemoved: Int, preview: Stone): Board = {
     val gameOver = stones.exists(_.doesCollide(this.preview)) || stones.headOption.exists(_.isOnTop)
 
@@ -41,31 +47,4 @@ class Board private (
   def forceNewStone(preview: Stone): Board =
     new Board(size, this.preview.toTopCenter(topCenter) :: stones, preview, statistics, isGameRunning)
 
-  def draw(): String = {
-    val previewSize = Size(5, 5)
-    val previewStone = preview.toTopCenter(Point(previewSize.width / 2, 0))
-
-    val boardDrawing = drawBoardOnlyInternal(size, points)
-    val previewDrawing = drawBoardOnlyInternal(previewSize, previewStone.points)
-    val gameStatus = if (!isGameRunning) "GAME OVER\n" else ""
-
-    s"$boardDrawing\n$previewDrawing\n$gameStatus${statistics.draw()}"
-  }
-
-  def drawBoardOnly(): String = drawBoardOnlyInternal(size, points)
-
-  private def drawBoardOnlyInternal(size: Size, points: List[Point]): String = {
-    val occupiedPoints = points.map(p => (p.x, p.y)).toSet
-    val builder = new StringBuilder
-
-    for (y <- 0 until size.height) {
-      builder.append("|")
-      for (x <- 0 until size.width) {
-        builder.append(if (occupiedPoints.contains((x, y))) "x" else " ")
-      }
-      builder.append("|\n")
-    }
-    builder.append("-" * (size.width + 2) + "\n")
-    builder.toString()
-  }
 }
