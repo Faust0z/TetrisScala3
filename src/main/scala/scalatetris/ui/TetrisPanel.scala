@@ -94,6 +94,9 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     drawLine("ESTADÍSTICAS")
     drawLine(s"Filas eliminadas: ${stats.rowsCompleted}")
     drawLine(f"Tiempo: $minutes%02d:$seconds%02d")
+    var displayPendingScore = ""
+    if (stats.pendingScore > 0) displayPendingScore = f" +${stats.pendingScore}" else ""
+    drawLine(f"Puntaje: ${stats.score} $displayPendingScore")
   }
 
   private def drawGameOver(g: Graphics2D): Unit = {
