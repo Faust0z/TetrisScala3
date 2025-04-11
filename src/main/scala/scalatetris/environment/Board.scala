@@ -16,7 +16,7 @@ class Board private (
       size,
       List(firstStone.toTopCenter(Point(size.width / 2, 0))),
       firstPreview,
-      Statistics(Calendar.getInstance().getTime, 0),
+      Statistics(Calendar.getInstance().getTime, 0, 0, 0),
       isGameRunning = true
     )
 
@@ -26,7 +26,7 @@ class Board private (
   def points: List[Point] = stones.flatMap(_.points)
   //aca va a actualizar el estado del tablero con la lista de piezas
   def update(stones: List[Stone]): Board =
-    new Board(size, stones, preview, statistics, isGameRunning)
+    new Board(size, stones, preview, statistics.addTimePoints().applyPendingPoints(), isGameRunning)
 
 
     //Actualiza el tablero tras eliminar filas o insertar una nueva pieza
