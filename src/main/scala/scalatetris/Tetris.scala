@@ -17,6 +17,7 @@ object Tetris {
   case object RotateRight extends Command
   case object Pause extends Command
   case object Tick extends Command
+  case object GameOver extends Command
 
   def apply(engine: GameEngine, display: Display): Behavior[Command] =
     Behaviors.setup { _ =>
@@ -25,11 +26,14 @@ object Tetris {
       Behaviors.receiveMessage {
         case Continue =>
           engine.continue()
+          AudioManager.resumeMusic()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Restart if !engine.isGameRunning =>
+        case Restart =>
           engine.restart()
+          AudioManager.stopMusic()
+          AudioManager.playMusic()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
@@ -70,6 +74,7 @@ object Tetris {
 
         case Pause =>
           engine.pause()
+          AudioManager.pauseMusic()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
@@ -78,6 +83,11 @@ object Tetris {
           if (tickCounts % 5 == 0) {
             engine.moveDown()
           }
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
+          Behaviors.same
+
+        case GameOver if !engine.isGameRunning =>
+          AudioManager.stopMusic()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 

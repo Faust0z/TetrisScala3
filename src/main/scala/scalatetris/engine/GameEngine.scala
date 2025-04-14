@@ -1,6 +1,7 @@
 package scalatetris.engine
 
 import scalatetris.environment._
+import scalatetris.AudioManager
 
 //le paso por parametro el tamaño del tablero y la fabrica de piezas de tetris
 sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
@@ -28,6 +29,10 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       val (points, numberOfRemovedRows) = removeFullRows(board.points)
       board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
       history = board :: history
+      if (!board.isGameRunning) {
+        AudioManager.stopMusic()
+        AudioManager.playGameOverSound()
+      }
     }
   }
 
@@ -64,6 +69,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     )
     history = board :: Nil
     future = Nil
+    isRunning = true
   }
 
   //fuerza la aparición de una nueva pieza.
@@ -85,10 +91,14 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   def statistics: Statistics = board.statistics
 
-  def pause(): Unit = isRunning = false
+  def pause(): Unit = {
+    isRunning = false
+    AudioManager.pauseMusic() // Pausar la música
+  }
 
   def continue(): Unit = {
     isRunning = true
+    AudioManager.resumeMusic() // Reanudar la música
     future = Nil
   }
 
