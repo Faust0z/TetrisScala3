@@ -29,7 +29,15 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     if (!board.isGameRunning) return
     
     if (!move(_.moveDown())) {
+      AudioManager.playCollisionSound()
       val (points, numberOfRemovedRows) = removeFullRows(board.points)
+      if (numberOfRemovedRows > 0) {
+        if (numberOfRemovedRows == 4) {
+          AudioManager.playFourLineSound()
+        } else {
+          AudioManager.playCompleteSound()
+        }
+      }
       board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
       history = board :: history
       if (!board.isGameRunning) {
@@ -58,13 +66,29 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   //Llaman a move() con los diferentes movimientos a la pieza actual.
   //estos movimientos estan dentro de Stone donde se especifica como se mueven la piezas
-  def moveLeft(): Unit = move(_.moveLeft())
+  def moveLeft(): Unit = {
+    if (move(_.moveLeft())) {
+      AudioManager.playSideSound()
+    }
+  }
 
-  def moveRight(): Unit = move(_.moveRight())
+  def moveRight(): Unit = {
+    if (move(_.moveRight())) {
+      AudioManager.playSideSound()
+    }
+  }
 
-  def rotateLeft(): Unit = move(_.rotateLeft())
+  def rotateLeft(): Unit = {
+    if (move(_.rotateLeft())) {
+      AudioManager.playSpinSound()
+    }
+  }
 
-  def rotateRight(): Unit = move(_.rotateRight())
+  def rotateRight(): Unit = {
+    if (move(_.rotateRight())) {
+      AudioManager.playSpinSound()
+    }
+  }
 
   //Reinicia el tablero y limpia historial.
   def restart(): Unit = {
@@ -102,6 +126,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   def pause(): Unit = {
     isRunning = false
     AudioManager.pauseMusic()
+    AudioManager.playPauseSound()
   }
 
   def continue(): Unit = {
@@ -110,7 +135,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     
     isRunning = true
     AudioManager.resumeMusic()
-    future = Nil
+    AudioManager.playResumeSound()
   }
 
   //esta es la proxima pieza para aparecer
