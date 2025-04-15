@@ -25,6 +25,9 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   si hay una fila completa la elimina con removeFullRows.
    */
   def moveDown(): Unit = {
+    // No permitas movimientos si el juego ya terminó
+    if (!board.isGameRunning) return
+    
     if (!move(_.moveDown())) {
       val (points, numberOfRemovedRows) = removeFullRows(board.points)
       board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
@@ -38,6 +41,9 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   //move() va a chequear si la nueva posición esta dentro del tablero y sin colisiones.
   private def move(action: Stone => Stone): Boolean = {
+    // No permitas movimientos si el juego ya terminó
+    if (!board.isGameRunning) return false
+    
     val oldStone = board.stones.head
     val newStone = action(oldStone)
 
@@ -74,6 +80,8 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   //fuerza la aparición de una nueva pieza.
   def forceNewStone(): Unit = {
+    if (!board.isGameRunning) return
+    
     board = board.forceNewStone(stoneFactory.createRandomStone())
     history = board :: history
   }
@@ -93,12 +101,15 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   def pause(): Unit = {
     isRunning = false
-    AudioManager.pauseMusic() // Pausar la música
+    AudioManager.pauseMusic()
   }
 
   def continue(): Unit = {
+    // Solo permite continuar si el tablero todavía está en juego
+    if (!board.isGameRunning) return
+    
     isRunning = true
-    AudioManager.resumeMusic() // Reanudar la música
+    AudioManager.resumeMusic()
     future = Nil
   }
 
