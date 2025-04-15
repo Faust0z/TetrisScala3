@@ -19,8 +19,8 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     "Square" -> Color.YELLOW,
     "Line" -> Color.CYAN,
     "T" -> Color.MAGENTA,
-    "L" -> Color.ORANGE,
-    "J" -> Color.BLUE,
+    "L" -> Color.BLUE,
+    "J" -> Color.ORANGE,
     "S" -> Color.GREEN,
     "Z" -> Color.RED,
     "Default" -> Color.GRAY
