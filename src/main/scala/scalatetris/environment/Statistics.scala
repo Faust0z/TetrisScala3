@@ -3,11 +3,13 @@ package scalatetris.environment
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
 
-case class Statistics(startTime: Date, rowsCompleted: Long, score: Int, pendingScore: Int) {
+case class Statistics(startTime: Date, rowsCompleted: Int, score: Int, pendingScore: Int) {
 
   def anotherRowHasBeenCompleted(numberOfRows: Int): Statistics =
-    val updatedStats = copy(rowsCompleted = rowsCompleted + numberOfRows)
-    if (numberOfRows > 0) addLinePoints(numberOfRows) else updatedStats
+    if (numberOfRows > 0)
+      addLinePoints(numberOfRows).copy(rowsCompleted = rowsCompleted + numberOfRows)
+    else
+      copy(rowsCompleted = rowsCompleted + numberOfRows)
 
   def addTimePoints(): Statistics =
     copy(score = score + 3)
@@ -19,13 +21,4 @@ case class Statistics(startTime: Date, rowsCompleted: Long, score: Int, pendingS
     val increment = math.max(100, pendingScore / 4)
     if (pendingScore > 0) copy(score = score + increment, pendingScore = pendingScore - increment) else this
 
-  def draw(): String = {
-    val now: Date = Calendar.getInstance().getTime
-    val duration: Long = now.getTime - startTime.getTime
-    val format = new SimpleDateFormat("mm:ss")
-    var displayPendingScore = ""
-    if (pendingScore > 0) displayPendingScore = f" +$pendingScore" else ""
-
-    s"Rows completed: $rowsCompleted\nTime spent: ${format.format(duration)}\nScore: $score $displayPendingScore"
-  }
 }
