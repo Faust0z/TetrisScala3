@@ -60,6 +60,7 @@ object Tetris {
           Behaviors.same
 
         case Down if engine.isGameRunning =>
+          AudioManager.playSpeedSound()
           engine.moveDown()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
