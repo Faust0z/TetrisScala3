@@ -26,10 +26,8 @@ class SwingDisplay(area: TextArea) extends Display {
       }
       builder.append("-" * (width + 2) + "\n")
       if (!isGameRunning) builder.append("GAME OVER\n")
-      builder.append(statistics.draw())
       builder.toString()
     }
-
     area.text = boardText
   }
 }
