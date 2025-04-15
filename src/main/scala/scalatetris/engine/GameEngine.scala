@@ -1,6 +1,7 @@
 package scalatetris.engine
 
 import scalatetris.environment._
+import scalatetris.AudioManager
 
 //le paso por parametro el tamaño del tablero y la fabrica de piezas de tetris
 sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
@@ -24,15 +25,25 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   si hay una fila completa la elimina con removeFullRows.
    */
   def moveDown(): Unit = {
+    // No permitas movimientos si el juego ya terminó
+    if (!board.isGameRunning) return
+    
     if (!move(_.moveDown())) {
       val (points, numberOfRemovedRows) = removeFullRows(board.points)
       board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
       history = board :: history
+      if (!board.isGameRunning) {
+        AudioManager.stopMusic()
+        AudioManager.playGameOverSound()
+      }
     }
   }
 
   //move() va a chequear si la nueva posición esta dentro del tablero y sin colisiones.
   private def move(action: Stone => Stone): Boolean = {
+    // No permitas movimientos si el juego ya terminó
+    if (!board.isGameRunning) return false
+    
     val oldStone = board.stones.head
     val newStone = action(oldStone)
 
@@ -64,10 +75,13 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     )
     history = board :: Nil
     future = Nil
+    isRunning = true
   }
 
   //fuerza la aparición de una nueva pieza.
   def forceNewStone(): Unit = {
+    if (!board.isGameRunning) return
+    
     board = board.forceNewStone(stoneFactory.createRandomStone())
     history = board :: history
   }
@@ -85,10 +99,17 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   def statistics: Statistics = board.statistics
 
-  def pause(): Unit = isRunning = false
+  def pause(): Unit = {
+    isRunning = false
+    AudioManager.pauseMusic()
+  }
 
   def continue(): Unit = {
+    // Solo permite continuar si el tablero todavía está en juego
+    if (!board.isGameRunning) return
+    
     isRunning = true
+    AudioManager.resumeMusic()
     future = Nil
   }
 

@@ -26,6 +26,8 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     "Default" -> Color.GRAY
   )
 
+  private var lastGameState: Boolean = true // Inicialmente asumimos que el juego está corriendo
+
   override def paintComponent(g: Graphics2D): Unit = {
     super.paintComponent(g)
     drawBackground(g)
@@ -34,13 +36,25 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     drawStatistics(g)
     drawPreviewStone(g)
     drawControls(g)
-    //se va a ejecutar cuando termine el juego
-    if (!engine.boardIsRunning && engine.IsRunning) {
+
+    // Detectar cambio de estado del juego
+    val currentGameState = engine.boardIsRunning
+    
+    // Se ejecuta cuando termine el juego
+    if (!currentGameState && engine.IsRunning) {
       drawGameOver(g)
+      
+      // Si recién detectamos que el juego terminó
+      if (lastGameState && !currentGameState) {
+        AudioManager.stopMusic()
+        AudioManager.playGameOverSound()
+      }
     } else if (!engine.IsRunning) {
       drawPaused(g)
     }
-
+    
+    // Actualizar el estado para la próxima vez
+    lastGameState = currentGameState
   }
 
   private def drawBackground(g: Graphics2D): Unit = {
@@ -100,21 +114,40 @@ class TetrisPanel(engine: GameEngine) extends Panel {
   }
 
   private def drawGameOver(g: Graphics2D): Unit = {
-    val message = "GAME OVER"
-    g.setColor(new Color(0, 0, 0, 150)) // fondo semitransparente
+    val mainMessage = "GAME OVER"
+    val restartMessage = "Presiona R para reiniciar"
+    
+    // Fondo semitransparente
+    g.setColor(new Color(0, 0, 0, 180))
     g.fillRect(0, 0, size.width, size.height)
-
-    g.setColor(Color.RED)
-    g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16))
-
-    val fm = g.getFontMetrics
-    val msgWidth = fm.stringWidth(message)
-    val msgHeight = fm.getAscent
-
-    val x = (size.width - msgWidth) / 2
-    val y = (size.height + msgHeight) / 2
-
-    g.drawString(message, x, y)
+    
+    // Configuración para el texto principal
+    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, 48))
+    val fmMain = g.getFontMetrics
+    val mainMsgWidth = fmMain.stringWidth(mainMessage)
+    val mainMsgHeight = fmMain.getHeight()
+    
+    // Dibujar el texto principal con efecto retro
+    val xMain = (size.width - mainMsgWidth) / 2
+    val yMain = (size.height - mainMsgHeight) / 2
+    
+    // Efecto de sombra/borde para estilo retro
+    g.setColor(Color.BLACK)
+    g.drawString(mainMessage, xMain + 3, yMain + 3)
+    g.setColor(new Color(255, 50, 50)) // Rojo brillante
+    g.drawString(mainMessage, xMain, yMain)
+    
+    // Mensaje para reiniciar
+    g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 18))
+    val fmRestart = g.getFontMetrics
+    val restartMsgWidth = fmRestart.stringWidth(restartMessage)
+    
+    // Posicionar debajo del mensaje principal
+    val xRestart = (size.width - restartMsgWidth) / 2
+    val yRestart = yMain + mainMsgHeight + 20
+    
+    g.setColor(Color.WHITE)
+    g.drawString(restartMessage, xRestart, yRestart)
   }
 
   private def colorOf(stone: Stone): Color = stone.stoneType match {
