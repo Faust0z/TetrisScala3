@@ -18,6 +18,7 @@ object Tetris {
   case object Pause extends Command
   case object Tick extends Command
   case object GameOver extends Command
+  case object Hold extends Command
 
   def apply(engine: GameEngine, display: Display): Behavior[Command] =
     Behaviors.setup { _ =>
@@ -75,6 +76,11 @@ object Tetris {
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
+        case Hold if engine.isGameRunning =>
+          engine.holdCurrentStone()
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
+          Behaviors.same
+
         case Pause if engine.isGameRunning =>
           engine.pause()
           AudioManager.pauseMusic()
@@ -83,8 +89,10 @@ object Tetris {
 
         case Tick =>
           if (engine.isGameRunning) {
-            tickCounts += 1
-            if (tickCounts % 5 == 0) {
+            tickCounts += 6 // Bajan 1 bloque por segundo, ajustar según dificultad base
+            val speedFactor = math.max(engine.getSpeedFactor, 1)
+            
+            if (tickCounts % speedFactor == 0) {
               engine.moveDown()
             }
           }

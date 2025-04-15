@@ -1,6 +1,6 @@
 package scalatetris
 
-import javax.sound.sampled.{AudioInputStream, AudioSystem, Clip}
+import javax.sound.sampled.{AudioInputStream, AudioSystem, Clip, FloatControl}
 
 object AudioManager {
   private var musicClip: Option[Clip] = None
@@ -13,12 +13,57 @@ object AudioManager {
   private var fourLineClip: Option[Clip] = None
   private var pauseClip: Option[Clip] = None
   private var resumeClip: Option[Clip] = None
+  
+  // Volumen inicial al 70%
+  private var volumeLevel: Float = 0.2f
+  
+  // Método para obtener el volumen actual (0.0 a 1.0)
+  def getVolume: Float = volumeLevel
+  
+  // Método para ajustar el volumen de todos los clips (0.0 a 1.0)
+  def setVolume(volume: Float): Unit = {
+    // Asegurar que el volumen esté entre 0.0 y 1.0
+    volumeLevel = math.min(1.0f, math.max(0.0f, volume))
+    
+    // Aplicar el volumen a todos los clips
+    applyVolumeToClip(musicClip)
+    applyVolumeToClip(gameOverClip)
+    applyVolumeToClip(collisionClip)
+    applyVolumeToClip(spinClip)
+    applyVolumeToClip(speedClip)
+    applyVolumeToClip(sideClip)
+    applyVolumeToClip(completeClip)
+    applyVolumeToClip(fourLineClip)
+    applyVolumeToClip(pauseClip)
+    applyVolumeToClip(resumeClip)
+  }
+  
+  // Método para aplicar el volumen a un clip individual
+  private def applyVolumeToClip(clip: Option[Clip]): Unit = {
+    clip.foreach { c =>
+      if (c.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+        val gainControl = c.getControl(FloatControl.Type.MASTER_GAIN).asInstanceOf[FloatControl]
+        // Convertir de escala lineal (0.0 a 1.0) a escala logarítmica de decibelios
+        val gainValue = if (volumeLevel > 0) 20.0f * math.log10(volumeLevel).toFloat else gainControl.getMinimum
+        // Asegurar que el valor esté dentro del rango admitido
+        val clampedGainValue = math.min(gainControl.getMaximum, math.max(gainControl.getMinimum, gainValue))
+        gainControl.setValue(clampedGainValue)
+      }
+    }
+  }
 
   private def loadSound(filePath: String): Option[Clip] = {
     try {
       val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(getClass.getResource(filePath))
       val clip = AudioSystem.getClip()
       clip.open(audioInputStream)
+      // Aplicar volumen al cargar
+      if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+        val gainControl = clip.getControl(FloatControl.Type.MASTER_GAIN).asInstanceOf[FloatControl]
+        val gainValue = if (volumeLevel > 0) 20.0f * math.log10(volumeLevel).toFloat else gainControl.getMinimum
+        val clampedGainValue = math.min(gainControl.getMaximum, math.max(gainControl.getMinimum, gainValue))
+        gainControl.setValue(clampedGainValue)
+      }
       Some(clip)
     } catch {
       case _: Exception => None

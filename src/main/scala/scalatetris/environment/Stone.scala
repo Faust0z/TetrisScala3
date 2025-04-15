@@ -82,6 +82,14 @@ case class Stone(points: List[Point], stoneType: String = "Default") {
 
   def moveRight(): Stone = copy(points = points.map(_.moveRight()))
 
+  def moveUp(): Stone = copy(points = points.map(p => Point(p.x, p.y - 1)))
+
+  def resetPosition(): Stone = {
+    val minX = points.map(_.x).min
+    val minY = points.map(_.y).min
+    copy(points = points.map(p => Point(p.x - minX, p.y - minY)))
+  }
+
   def rotateLeft(): Stone =
     if (points.isEmpty) this
     else copy(points = points.map(_.rotateAroundCenterLeft(findRotationCenter())))

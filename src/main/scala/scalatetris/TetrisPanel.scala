@@ -4,16 +4,16 @@ import scalatetris.engine.GameEngine
 import scalatetris.environment._
 
 import scala.swing._
-import java.awt.{Color, Graphics2D, GradientPaint, BasicStroke}
+import java.awt.{Color, Graphics2D, GradientPaint, BasicStroke, GraphicsDevice, GraphicsEnvironment}
 
-class TetrisPanel(engine: GameEngine) extends Panel {
+class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel {
   preferredSize = new Dimension(640, 768)
   focusable = true
   requestFocus()
 
-  private val blockSize = 30
-  private val offsetX = 50
-  private val offsetY = 50
+  private var blockSize = initialBlockSize
+  private var offsetX = 50
+  private var offsetY = 50
 
   // Colores retro para las piezas con efecto neón
   private val stoneColors: Map[String, (Color, Color)] = Map(
@@ -31,8 +31,24 @@ class TetrisPanel(engine: GameEngine) extends Panel {
   private val backgroundColor = new Color(0, 0, 30)  // Azul muy oscuro
   private val gridColor = new Color(40, 40, 80)      // Azul grisáceo para la grilla
   private val borderColor = new Color(0, 191, 255)   // Azul brillante para bordes
+  private val ghostColor = new Color(255, 255, 255, 40)  // Color semi-transparente para la pieza fantasma
 
   private var lastGameState: Boolean = true // Inicialmente asumimos que el juego está corriendo
+
+  // Método para recalcular tamaños basados en el tamaño del panel
+  def resizeUI(): Unit = {
+    val availableWidth = size.width
+    val availableHeight = size.height
+    
+    // Calcular el nuevo tamaño de bloque basado en el espacio disponible
+    val maxBlockWidth = (availableWidth * 0.70 / engine.boardSize.width).toInt
+    val maxBlockHeight = (availableHeight * 0.85 / engine.boardSize.height).toInt
+    blockSize = math.min(maxBlockWidth, maxBlockHeight)
+    
+    // Centrar la cuadrícula en el espacio disponible
+    offsetX = (availableWidth - blockSize * engine.boardSize.width) / 2
+    offsetY = (availableHeight - blockSize * engine.boardSize.height) / 2
+  }
 
   override def paintComponent(g: Graphics2D): Unit = {
     super.paintComponent(g)
@@ -43,9 +59,17 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     drawBackground(g)
     drawGrid(g)
     drawBorder(g)
+    
+    // Calcular y dibujar la pieza fantasma
+    if (engine.isGameRunning && engine.stones.nonEmpty) {
+      val ghostPiece = calculateGhostPiece(engine.stones.head)
+      drawGhostPiece(g, ghostPiece)
+    }
+    
     drawStones(g)
     drawPauseReminder(g)
     // Dibujar los paneles de información después de todo lo demás
+    drawHoldPanel(g)
     drawStatisticsPanel(g)
     drawPreviewPanel(g)
 
@@ -53,6 +77,33 @@ class TetrisPanel(engine: GameEngine) extends Panel {
       drawGameOver(g)
     } else if (!engine.IsRunning) {
       drawPaused(g)
+    }
+  }
+
+  // Calcular la posición de la pieza fantasma (proyección)
+  private def calculateGhostPiece(currentStone: Stone): Stone = {
+    var ghostStone = currentStone
+    var testStone = ghostStone.moveDown()
+    
+    // Mover hacia abajo hasta que colisione
+    while (testStone.isInFrame(engine.boardSize) && 
+           !engine.stones.tail.exists(_.doesCollide(testStone))) {
+      ghostStone = testStone
+      testStone = ghostStone.moveDown()
+    }
+    
+    ghostStone
+  }
+
+  // Dibujar la pieza fantasma
+  private def drawGhostPiece(g: Graphics2D, stone: Stone): Unit = {
+    g.setColor(ghostColor)
+    stone.points.foreach { p =>
+      val blockX = offsetX + p.x * blockSize
+      val blockY = offsetY + p.y * blockSize
+      g.fillRect(blockX, blockY, blockSize, blockSize)
+      g.setColor(new Color(255, 255, 255, 60))
+      g.drawRect(blockX, blockY, blockSize, blockSize)
     }
   }
 
@@ -116,9 +167,9 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     val statX = offsetX + engine.boardSize.width * blockSize + 30
     var statY = offsetY + 20  // Ajustado para empezar más arriba
 
-    // Panel de estadísticas con borde neón
-    val panelWidth = 160
-    val panelHeight = 120
+    val scaleFactor = blockSize / 30.0  // Factor de escala basado en el tamaño del bloque
+    val panelWidth = (160 * scaleFactor).toInt
+    val panelHeight = (150 * scaleFactor).toInt
     
     // Fondo del panel con gradiente
     val gradientBg = new GradientPaint(
@@ -135,22 +186,24 @@ class TetrisPanel(engine: GameEngine) extends Panel {
 
     // Título del panel
     g.setColor(Color.WHITE)
-    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, 20))
+    val titleFontSize = (20 * scaleFactor).toInt
+    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, titleFontSize))
     val titleText = "ESTADÍSTICAS"
     val fm = g.getFontMetrics
     val titleWidth = fm.stringWidth(titleText)
     g.drawString(titleText, statX + (panelWidth - titleWidth)/2 - 10, statY - 15)
 
     // Dibujar estadísticas
-    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, 18))
-    statY += 10 // Ajuste después del título
+    val fontSize = (18 * scaleFactor).toInt
+    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, fontSize))
+    statY += (10 * scaleFactor).toInt // Ajuste después del título
 
     def drawStatLine(label: String, value: String): Unit = {
       // Sombra
       g.setColor(new Color(0, 0, 0))
       g.drawString(label, statX + 1, statY + 1)
       
-      val valueX = statX + panelWidth - 60  // Alineación derecha para los valores
+      val valueX = statX + panelWidth - (60 * scaleFactor).toInt  // Alineación derecha para los valores
       g.drawString(value, valueX + 1, statY + 1)
       
       // Texto principal
@@ -159,7 +212,7 @@ class TetrisPanel(engine: GameEngine) extends Panel {
       g.setColor(new Color(0, 255, 255))  // Color cyan para los valores
       g.drawString(value, valueX, statY)
       
-      statY += 30  // Espaciado entre líneas
+      statY += (30 * scaleFactor).toInt  // Espaciado entre líneas
     }
 
     val now = new java.util.Date()
@@ -167,6 +220,7 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     val seconds = (duration / 1000) % 60
     val minutes = (duration / 1000) / 60
 
+    drawStatLine("NIVEL", engine.getLevel.toString)
     drawStatLine("FILAS", stats.rowsCompleted.toString)
     drawStatLine("TIEMPO", f"$minutes%02d:$seconds%02d")
     var scoreText = stats.score.toString
@@ -180,13 +234,12 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     val previewStone = engine.nextStone
     val (mainColor, shadowColor) = stoneColors.getOrElse(previewStone.stoneType, (Color.GRAY, Color.DARK_GRAY))
 
+    val scaleFactor = blockSize / 30.0
+    val panelWidth = (150 * scaleFactor).toInt
+    val panelHeight = (150 * scaleFactor).toInt
     val previewX = offsetX + engine.boardSize.width * blockSize + 30
-    val previewY = offsetY + 200
+    val previewY = offsetY + (200 * scaleFactor).toInt
 
-    // Panel de preview con borde neón
-    val panelWidth = 150
-    val panelHeight = 150
-    
     // Fondo del panel con gradiente
     val gradientBg = new GradientPaint(
       previewX, previewY, new Color(0, 0, 40),
@@ -201,7 +254,8 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     g.drawRect(previewX, previewY, panelWidth, panelHeight)
 
     // Título "SIGUIENTE"
-    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, 20))
+    val titleFontSize = (20 * scaleFactor).toInt
+    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, titleFontSize))
     g.setColor(Color.WHITE)
     g.drawString("SIGUIENTE", previewX + 10, previewY - 10)
 
@@ -242,12 +296,13 @@ class TetrisPanel(engine: GameEngine) extends Panel {
   private def drawPauseReminder(g: Graphics2D): Unit = {
     if (engine.isGameRunning) {
       val reminderText = "Pausa/Controles: 'P'"
-      g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 14))
+      val fontSize = (14 * blockSize / 30.0).toInt
+      g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, fontSize))
       val fm = g.getFontMetrics
       val textWidth = fm.stringWidth(reminderText)
       
       val x = offsetX + (engine.boardSize.width * blockSize - textWidth) / 2
-      val y = offsetY + engine.boardSize.height * blockSize + 25
+      val y = offsetY + engine.boardSize.height * blockSize + (25 * blockSize / 30.0).toInt
       
       // Sombra del texto
       g.setColor(Color.BLACK)
@@ -261,21 +316,27 @@ class TetrisPanel(engine: GameEngine) extends Panel {
 
   private def drawGameOver(g: Graphics2D): Unit = {
     val mainMessage = "GAME OVER"
+    val scoreMessage = s"PUNTUACIÓN: ${engine.statistics.score}"
+    val highScoreMessage = s"RÉCORD: ${Main.getHighScore}"
     val restartMessage = "Presiona R para reiniciar"
+    
+    // Actualizar el récord si es necesario
+    Main.updateHighScore(engine.statistics.score)
     
     // Fondo semitransparente
     g.setColor(new Color(0, 0, 0, 180))
     g.fillRect(0, 0, size.width, size.height)
     
     // Configuración para el texto principal
-    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, 48))
+    val titleFontSize = (48 * blockSize / 30.0).toInt
+    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, titleFontSize))
     val fmMain = g.getFontMetrics
     val mainMsgWidth = fmMain.stringWidth(mainMessage)
     val mainMsgHeight = fmMain.getHeight()
     
     // Dibujar el texto principal con efecto retro
     val xMain = (size.width - mainMsgWidth) / 2
-    val yMain = (size.height - mainMsgHeight) / 2
+    val yMain = (size.height - mainMsgHeight) / 2 - titleFontSize
     
     // Efecto de sombra/borde para estilo retro
     g.setColor(Color.BLACK)
@@ -283,14 +344,40 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     g.setColor(new Color(255, 50, 50)) // Rojo brillante
     g.drawString(mainMessage, xMain, yMain)
     
+    // Configuración para el texto de puntuación
+    val scoreFontSize = (24 * blockSize / 30.0).toInt
+    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, scoreFontSize))
+    val fmScore = g.getFontMetrics
+    val scoreMsgWidth = fmScore.stringWidth(scoreMessage)
+    
+    // Dibujar la puntuación
+    val xScore = (size.width - scoreMsgWidth) / 2
+    val yScore = yMain + mainMsgHeight + scoreFontSize
+    
+    g.setColor(Color.BLACK)
+    g.drawString(scoreMessage, xScore + 2, yScore + 2)
+    g.setColor(new Color(255, 215, 0)) // Dorado
+    g.drawString(scoreMessage, xScore, yScore)
+    
+    // Dibujar el récord
+    val highScoreMsgWidth = fmScore.stringWidth(highScoreMessage)
+    val xHighScore = (size.width - highScoreMsgWidth) / 2
+    val yHighScore = yScore + (scoreFontSize * 1.5).toInt
+    
+    g.setColor(Color.BLACK)
+    g.drawString(highScoreMessage, xHighScore + 2, yHighScore + 2)
+    g.setColor(new Color(0, 255, 255)) // Cyan
+    g.drawString(highScoreMessage, xHighScore, yHighScore)
+    
     // Mensaje para reiniciar
-    g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 18))
+    val restartFontSize = (18 * blockSize / 30.0).toInt
+    g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, restartFontSize))
     val fmRestart = g.getFontMetrics
     val restartMsgWidth = fmRestart.stringWidth(restartMessage)
     
-    // Posicionar debajo del mensaje principal
+    // Posicionar debajo de la puntuación
     val xRestart = (size.width - restartMsgWidth) / 2
-    val yRestart = yMain + mainMsgHeight + 20
+    val yRestart = yHighScore + (scoreFontSize * 2).toInt
     
     g.setColor(Color.WHITE)
     g.drawString(restartMessage, xRestart, yRestart)
@@ -311,51 +398,54 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     val controlsX = (size.width - 300) / 2  // Centrado en la pantalla
     var controlsY = (size.height - 400) / 2  // Comenzar más arriba en la pantalla
 
+    val scaleFactor = blockSize / 30.0
+    val keyWidth = (30 * scaleFactor).toInt
+    val keyHeight = (25 * scaleFactor).toInt
+    val spacing = (40 * scaleFactor).toInt
+    val fontSize = (16 * scaleFactor).toInt
+
     def drawControlLine(key: String, action: String, y: Int): Unit = {
       // Dibujar el fondo del botón para la tecla
       g.setColor(new Color(40, 40, 40))
       val keyX = controlsX
-      val keyWidth = 30
-      g.fillRect(keyX, y - 20, keyWidth, 25)
+      g.fillRect(keyX, y - keyHeight + 5, keyWidth, keyHeight)
       
       // Borde del botón
       g.setColor(new Color(80, 80, 80))
-      g.drawRect(keyX, y - 20, keyWidth, 25)
+      g.drawRect(keyX, y - keyHeight + 5, keyWidth, keyHeight)
       
       // Dibujar la tecla
       g.setColor(Color.WHITE)
-      g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16))
+      g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, fontSize))
       val keyMetrics = g.getFontMetrics
       val keyTextX = keyX + (keyWidth - keyMetrics.stringWidth(key)) / 2
       g.drawString(key, keyTextX, y)
       
       // Dibujar la acción
       g.setColor(new Color(200, 200, 200))
-      g.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 16))
-      g.drawString(action, keyX + keyWidth + 20, y)
+      g.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, fontSize))
+      g.drawString(action, keyX + keyWidth + (20 * scaleFactor).toInt, y)
     }
 
     // Título "CONTROLES"
     g.setColor(new Color(0, 0, 0, 180))
     g.fillRect(0, 0, size.width, size.height)
     
-    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, 36))
+    val titleFontSize = (36 * scaleFactor).toInt
+    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, titleFontSize))
     val titleText = "CONTROLES"
     val fm = g.getFontMetrics
     val titleWidth = fm.stringWidth(titleText)
     
     // Efecto de sombra para el título
     g.setColor(Color.BLACK)
-    g.drawString(titleText, (size.width - titleWidth) / 2 + 2, controlsY - 40 + 2)
+    g.drawString(titleText, (size.width - titleWidth) / 2 + 2, controlsY - (40 * scaleFactor).toInt + 2)
     g.setColor(new Color(0, 191, 255)) // Deep Sky Blue
-    g.drawString(titleText, (size.width - titleWidth) / 2, controlsY - 40)
+    g.drawString(titleText, (size.width - titleWidth) / 2, controlsY - (40 * scaleFactor).toInt)
 
     // Línea decorativa bajo el título
     g.setColor(new Color(0, 191, 255, 150))
-    g.fillRect((size.width - titleWidth) / 2, controlsY - 20, titleWidth, 2)
-
-    // Espacio entre cada control
-    val spacing = 40
+    g.fillRect((size.width - titleWidth) / 2, controlsY - (20 * scaleFactor).toInt, titleWidth, 2)
     
     // Lista de controles
     drawControlLine("A", "Mover izquierda", controlsY + spacing)
@@ -366,6 +456,9 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     drawControlLine("P", "Pausa", controlsY + spacing * 6)
     drawControlLine("C", "Continuar", controlsY + spacing * 7)
     drawControlLine("R", "Reiniciar juego", controlsY + spacing * 8)
+    drawControlLine("M", "Volver al menú", controlsY + spacing * 9)
+    drawControlLine("ESC", "Volver al menú", controlsY + spacing * 10)
+    drawControlLine("F11", "Pantalla completa", controlsY + spacing * 11)
   }
 
   private def drawPaused(g: Graphics2D): Unit = {
@@ -376,12 +469,14 @@ class TetrisPanel(engine: GameEngine) extends Panel {
     g.fillRect(0, 0, size.width, size.height)
 
     // Configuración para el texto "PAUSA"
-    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, 48))
+    val scaleFactor = blockSize / 30.0
+    val fontSize = (48 * scaleFactor).toInt
+    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, fontSize))
     val fm = g.getFontMetrics
     val msgWidth = fm.stringWidth(message)
     val msgHeight = fm.getHeight
     val x = (size.width - msgWidth) / 2
-    val y = msgHeight + 50
+    val y = msgHeight + (50 * scaleFactor).toInt
 
     // Efecto de sombra/borde para el texto "PAUSA"
     g.setColor(Color.BLACK)
@@ -391,5 +486,58 @@ class TetrisPanel(engine: GameEngine) extends Panel {
 
     // Dibujar los controles
     drawControls(g)
+  }
+
+  // Dibujar panel de pieza guardada (hold)
+  private def drawHoldPanel(g: Graphics2D): Unit = {
+    val holdStone = engine.getHoldStone
+    
+    val scaleFactor = blockSize / 30.0
+    val panelWidth = (150 * scaleFactor).toInt
+    val panelHeight = (150 * scaleFactor).toInt
+    val holdX = offsetX - panelWidth - 30
+    val holdY = offsetY + 20
+
+    // Fondo del panel con gradiente
+    val gradientBg = new GradientPaint(
+      holdX, holdY, new Color(0, 0, 40),
+      holdX + panelWidth, holdY + panelHeight, new Color(0, 0, 60)
+    )
+    g.setPaint(gradientBg)
+    g.fillRect(holdX, holdY, panelWidth, panelHeight)
+    
+    // Borde neón
+    g.setColor(borderColor)
+    g.setStroke(new BasicStroke(2))
+    g.drawRect(holdX, holdY, panelWidth, panelHeight)
+
+    // Título "HOLD"
+    val titleFontSize = (20 * scaleFactor).toInt
+    g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, titleFontSize))
+    g.setColor(Color.WHITE)
+    g.drawString("HOLD", holdX + 10, holdY - 10)
+
+    // Dibujar la pieza guardada si existe
+    holdStone.foreach { stone =>
+      val (mainColor, shadowColor) = stoneColors.getOrElse(stone.stoneType, (Color.GRAY, Color.DARK_GRAY))
+      
+      // Centrar la pieza hold en su panel
+      val holdBlockSize = blockSize  // Mantener el mismo tamaño de bloque
+      val pieceWidth = stone.points.map(_.x).max - stone.points.map(_.x).min + 1
+      val pieceHeight = stone.points.map(_.y).max - stone.points.map(_.y).min + 1
+      
+      val centerX = holdX + (panelWidth - pieceWidth * holdBlockSize) / 2
+      val centerY = holdY + (panelHeight - pieceHeight * holdBlockSize) / 2
+
+      // Ajustar la posición de cada bloque para centrarlo
+      val minX = stone.points.map(_.x).min
+      val minY = stone.points.map(_.y).min
+      
+      stone.points.foreach { p =>
+        val adjustedX = centerX + (p.x - minX) * holdBlockSize
+        val adjustedY = centerY + (p.y - minY) * holdBlockSize
+        fillPreviewBlock(g, adjustedX, adjustedY, holdBlockSize, mainColor, shadowColor)
+      }
+    }
   }
 }
