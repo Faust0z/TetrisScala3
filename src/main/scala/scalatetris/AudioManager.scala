@@ -36,6 +36,7 @@ object AudioManager {
   def resumeMusic(): Unit = {
     musicClip.foreach { clip =>
       clip.start() // Solo iniciar la música sin reiniciarla
+      clip.loop(Clip.LOOP_CONTINUOUSLY)
     }
   }
 
