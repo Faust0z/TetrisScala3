@@ -12,6 +12,11 @@ import scala.swing.event.{Key, KeyPressed}
 
 object Main extends SimpleSwingApplication {
   def top: Frame = {
+    // Cargar música y sonido de game over
+    AudioManager.loadMusic("/tetris_music.wav")
+    AudioManager.loadGameOverSound("/game_over_sound.wav")
+    AudioManager.playMusic()
+
     val engine = new GameEngine(Size(10, 20), RandomStoneFactory)
     val panel = new TetrisPanel(engine)
 

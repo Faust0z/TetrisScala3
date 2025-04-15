@@ -17,6 +17,7 @@ object Tetris {
   case object RotateRight extends Command
   case object Pause extends Command
   case object Tick extends Command
+  case object GameOver extends Command
 
   def apply(engine: GameEngine, display: Display): Behavior[Command] =
     Behaviors.setup { _ =>
@@ -24,59 +25,67 @@ object Tetris {
 
       Behaviors.receiveMessage {
         case Continue =>
-          engine.continue()
+          if (!engine.IsRunning && engine.boardIsRunning) {
+            engine.continue()
+            AudioManager.resumeMusic()
+          }
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Restart if !engine.isGameRunning =>
+        case Restart =>
           engine.restart()
+          AudioManager.stopMusic()
+          AudioManager.playMusic()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Left if !engine.isGameRunning =>
+        case Left if !engine.IsRunning && !engine.boardIsRunning =>
           engine.backwardInTime()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Right if !engine.isGameRunning =>
+        case Right if !engine.IsRunning && !engine.boardIsRunning =>
           engine.backIntoTheFuture()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Left =>
+        case Left if engine.isGameRunning =>
           engine.moveLeft()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Right =>
+        case Right if engine.isGameRunning =>
           engine.moveRight()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Down =>
+        case Down if engine.isGameRunning =>
           engine.moveDown()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case RotateLeft =>
+        case RotateLeft if engine.isGameRunning =>
           engine.rotateLeft()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case RotateRight =>
+        case RotateRight if engine.isGameRunning =>
           engine.rotateRight()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Pause =>
+        case Pause if engine.isGameRunning =>
           engine.pause()
+          AudioManager.pauseMusic()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Tick if engine.isGameRunning =>
-          tickCounts += 1
-          if (tickCounts % 5 == 0) {
-            engine.moveDown()
+        case Tick =>
+          if (engine.isGameRunning) {
+            tickCounts += 1
+            if (tickCounts % 5 == 0) {
+              engine.moveDown()
+            }
           }
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
