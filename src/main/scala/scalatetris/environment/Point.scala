@@ -18,15 +18,9 @@ case class Point(x: Int, y: Int) {
     center + rotated
   }
 
-  private[environment] def rotateLeft(): Point = rotate(math.Pi / 2)
+  private[environment] def rotateLeft(): Point = Point(-y, x)
 
-  private[environment] def rotateRight(): Point = rotate(-math.Pi / 2)
-
-  private def rotate(angle: Double): Point = {
-    val newX = (x * math.cos(angle) - y * math.sin(angle)).round.toInt
-    val newY = (x * math.sin(angle) + y * math.cos(angle)).round.toInt
-    Point(newX, newY)
-  }
+  private[environment] def rotateRight(): Point = Point(y, -x)
 
   def max(other: Point): Point = Point(math.max(x, other.x), math.max(y, other.y))
 

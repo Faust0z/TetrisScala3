@@ -27,7 +27,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   def moveDown(): Unit = {
     // No permitas movimientos si el juego ya terminó
     if (!board.isGameRunning) return
-    
+
     if (!move(_.moveDown())) {
       AudioManager.playCollisionSound()
       val (points, numberOfRemovedRows) = removeFullRows(board.points)
@@ -51,7 +51,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   private def move(action: Stone => Stone): Boolean = {
     // No permitas movimientos si el juego ya terminó
     if (!board.isGameRunning) return false
-    
+
     val oldStone = board.stones.head
     val newStone = action(oldStone)
 
@@ -78,14 +78,37 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     }
   }
 
+  def rotate(clockwise: Boolean): Boolean = {
+    val currentStone = board.stones.head
+
+    val attemptRotation = (stone: Stone) => {
+      val rotated = if (clockwise) stone.rotateRight() else stone.rotateLeft()
+      if (rotated.isInFrame(board.size) && !board.stones.tail.exists(_.doesCollide(rotated)))
+        Some(rotated)
+      else None
+    }
+
+    val rotatedStoneOpt = attemptRotation(currentStone)
+      .orElse(attemptRotation(currentStone.moveRight()))
+      .orElse(attemptRotation(currentStone.moveLeft()))
+
+    rotatedStoneOpt match {
+      case Some(rotatedStone) =>
+        board = board.update(rotatedStone :: board.stones.tail)
+        history = board :: history
+        true
+      case None => false
+    }
+  }
+
   def rotateLeft(): Unit = {
-    if (move(_.rotateLeft())) {
+    if (rotate(false)) {
       AudioManager.playSpinSound()
     }
   }
 
   def rotateRight(): Unit = {
-    if (move(_.rotateRight())) {
+    if (rotate(true)) {
       AudioManager.playSpinSound()
     }
   }
@@ -105,7 +128,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   //fuerza la aparición de una nueva pieza.
   def forceNewStone(): Unit = {
     if (!board.isGameRunning) return
-    
+
     board = board.forceNewStone(stoneFactory.createRandomStone())
     history = board :: history
   }
@@ -113,7 +136,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   def boardIsRunning: Boolean = board.isGameRunning
 
   def IsRunning: Boolean = isRunning
-  
+
   //si esta o no corriendo
   def isGameRunning: Boolean = board.isGameRunning && isRunning
 
@@ -132,7 +155,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   def continue(): Unit = {
     // Solo permite continuar si el tablero todavía está en juego
     if (!board.isGameRunning) return
-    
+
     isRunning = true
     AudioManager.resumeMusic()
     AudioManager.playResumeSound()
