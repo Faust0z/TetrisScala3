@@ -1,7 +1,7 @@
 package scalatetris.environment
 
 object Stone {
-  def apply(start: Point): Stone = Stone(List(start), "Default")
+  def apply(start: Point): Stone = Stone(List(start))
 }
 
 object Square {
@@ -82,34 +82,26 @@ case class Stone(points: List[Point], stoneType: String = "Default") {
 
   def moveRight(): Stone = copy(points = points.map(_.moveRight()))
 
-  def moveUp(): Stone = copy(points = points.map(p => Point(p.x, p.y - 1)))
+  def rotateLeft(): Stone = copy(points = points.map(_.rotateAroundCenterLeft(findRotationCenter)))
 
-  def resetPosition(): Stone = {
-    val minX = points.map(_.x).min
-    val minY = points.map(_.y).min
-    copy(points = points.map(p => Point(p.x - minX, p.y - minY)))
-  }
-
-  def rotateLeft(): Stone =
-    if (points.isEmpty) this
-    else copy(points = points.map(_.rotateAroundCenterLeft(findRotationCenter())))
-
-  def rotateRight(): Stone =
-    if (points.isEmpty) this
-    else copy(points = points.map(_.rotateAroundCenterRight(findRotationCenter())))
-
-  private def findRotationCenter(): Point = {
-    val (min, max) = points.foldLeft((points.head, points.head)) {
-      case ((min, max), point) => (min.min(point), max.max(point))
-    }
-    (max + min + Point(0, 1)) / 2
+  def rotateRight(): Stone = copy(points = points.map(_.rotateAroundCenterRight(findRotationCenter)))
+  
+  //  Se podría incluir el centro de rotación directamente en la declaración de las Stones
+  private def findRotationCenter: Point = stoneType match {
+    case "T" => points(1)
+    case "L" => points(2)
+    case "J" => points(2)
+    case "Line" => points(1)
+    case "S" => points(2)
+    case "Z" => points(2)
+    case _ => points.head
   }
 
   def toTopCenter(center: Point): Stone =
     if (points.isEmpty) this
     else {
       val min = points.reduceLeft(_.min(_))
-      val stoneCenter = findRotationCenter()
+      val stoneCenter = findRotationCenter
       val xDiff = stoneCenter.x - center.x
       copy(points = points.map(_ - Point(xDiff, min.y)))
     }

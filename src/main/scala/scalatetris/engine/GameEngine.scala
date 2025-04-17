@@ -18,16 +18,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   // Pieza guardada/reservada (hold)
   private var holdStone: Option[Stone] = None
   private var holdUsedThisTurn: Boolean = false
-  
-  // Offset para intentar rotar piezas cerca de los bordes (wall-kicks)
-  private val kickOffsets = List(
-    (0, 0),   // Sin desplazamiento
-    (1, 0),   // Mover a la derecha
-    (-1, 0),  // Mover a la izquierda
-    (0, -1),  // Mover hacia arriba
-    (2, 0),   // Mover dos a la derecha
-    (-2, 0)   // Mover dos a la izquierda
-  )
 
   //isRunning: si el juego está activo o en pausa
   private var isRunning: Boolean = true
@@ -49,7 +39,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   def moveDown(): Unit = {
     // No permitas movimientos si el juego ya terminó
     if (!board.isGameRunning) return
-    
+
     if (!move(_.moveDown())) {
       AudioManager.playCollisionSound()
       val (points, numberOfRemovedRows) = removeFullRows(board.points)
@@ -105,7 +95,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   private def move(action: Stone => Stone): Boolean = {
     // No permitas movimientos si el juego ya terminó
     if (!board.isGameRunning) return false
-    
+
     val oldStone = board.stones.head
     val newStone = action(oldStone)
 
@@ -132,51 +122,44 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     }
   }
 
-  // Implementación mejorada de rotación con wall-kicks
+  // Se define la rotación hacia la izquierda o la derecha según el atributo. Si es un cuadrado no se rota
+  private def rotate(clockwise: Boolean): Boolean = {
+    val currentStone = board.stones.head
+    if (currentStone.stoneType == "Square") return false
+
+    // Función auxiliar que rota según clockwise y chequea si la piedra rotada esté en el tablero y no choque con nada
+    val attemptRotation = (stone: Stone) => {
+      val rotated = if (clockwise) stone.rotateRight() else stone.rotateLeft()
+      if (rotated.isInFrame(board.size) && !board.stones.tail.exists(_.doesCollide(rotated)))
+        Some(rotated)
+      else None
+    }
+
+    // Intenta rotar la piedra hacia un lado. Si no puede (ya que el métdo devuelve None), intenta desplazarla
+    // hacia el centro e intenta de nuevo hasta que consigue rotarla de alguna manera
+    val rotatedStoneOpt = attemptRotation(currentStone)
+      .orElse(attemptRotation(currentStone.moveRight()))
+      .orElse(attemptRotation(currentStone.moveLeft()))
+
+    rotatedStoneOpt match {
+      case Some(rotatedStone) =>
+        board = board.update(rotatedStone :: board.stones.tail)
+        history = board :: history
+        true
+      case None => false
+    }
+  }
+
   def rotateLeft(): Unit = {
-    val didRotate = rotateWithKicks(stone => stone.rotateLeft())
-    if (didRotate) {
+    if (rotate(false)) {
       AudioManager.playSpinSound()
     }
   }
 
   def rotateRight(): Unit = {
-    val didRotate = rotateWithKicks(stone => stone.rotateRight())
-    if (didRotate) {
+    if (rotate(true)) {
       AudioManager.playSpinSound()
     }
-  }
-  
-  // Implementación de wall-kicks
-  private def rotateWithKicks(rotateFunc: Stone => Stone): Boolean = {
-    if (!board.isGameRunning) return false
-    
-    val currentStone = board.stones.head
-    
-    // Intentar cada offset posible
-    for ((xOffset, yOffset) <- kickOffsets) {
-      val rotatedStone = rotateFunc(currentStone)
-      val adjustedStone = Try {
-        (0 until xOffset.abs).foldLeft(rotatedStone) { (stone, _) =>
-          if (xOffset > 0) stone.moveRight() else if (xOffset < 0) stone.moveLeft() else stone
-        }
-      }.getOrElse(rotatedStone)
-      
-      val finalStone = Try {
-        (0 until yOffset.abs).foldLeft(adjustedStone) { (stone, _) =>
-          if (yOffset < 0) stone.moveUp() else if (yOffset > 0) stone.moveDown() else stone
-        }
-      }.getOrElse(adjustedStone)
-      
-      // Verificar si esta posición es válida
-      if (finalStone.isInFrame(board.size) && !board.stones.tail.exists(_.doesCollide(finalStone))) {
-        board = board.update(finalStone :: board.stones.tail)
-        history = board :: history
-        return true
-      }
-    }
-    
-    false  // No se pudo rotar con ningún offset
   }
   
   // Hold/guardar pieza actual
@@ -234,18 +217,10 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     pauseStartTime = None
   }
 
-  //fuerza la aparición de una nueva pieza.
-  def forceNewStone(): Unit = {
-    if (!board.isGameRunning) return
-    
-    board = board.forceNewStone(stoneFactory.createRandomStone())
-    history = board :: history
-  }
-
   def boardIsRunning: Boolean = board.isGameRunning
 
   def IsRunning: Boolean = isRunning
-  
+
   //si esta o no corriendo
   def isGameRunning: Boolean = board.isGameRunning && isRunning
 
@@ -278,7 +253,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   def continue(): Unit = {
     // Solo permite continuar si el tablero todavía está en juego
     if (!board.isGameRunning) return
-    
+
     if (!isRunning && pauseStartTime.isDefined) {
       val now = System.currentTimeMillis()
       totalPausedTime += now - pauseStartTime.get
