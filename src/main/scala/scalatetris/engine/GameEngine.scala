@@ -78,9 +78,14 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     }
   }
 
-  def rotate(clockwise: Boolean): Boolean = {
+  /*
+  Se define la rotación hacia la izquierda o la derecha según el atributo. Si es un cuadrado no se rota
+   */
+  private def rotate(clockwise: Boolean): Boolean = {
     val currentStone = board.stones.head
+    if (currentStone.stoneType == "Square") return false
 
+    // Función auxiliar que rota según clockwise y chequea si la piedra rotada esté en el tablero y no choque con nada
     val attemptRotation = (stone: Stone) => {
       val rotated = if (clockwise) stone.rotateRight() else stone.rotateLeft()
       if (rotated.isInFrame(board.size) && !board.stones.tail.exists(_.doesCollide(rotated)))
@@ -88,6 +93,8 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       else None
     }
 
+    // Intenta rotar la piedra hacia un lado. Si no puede (ya que el métdo devuelve None), intenta desplazarla
+    // hacia el centro e intenta de nuevo hasta que consigue rotarla de alguna manera
     val rotatedStoneOpt = attemptRotation(currentStone)
       .orElse(attemptRotation(currentStone.moveRight()))
       .orElse(attemptRotation(currentStone.moveLeft()))
@@ -123,14 +130,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     history = board :: Nil
     future = Nil
     isRunning = true
-  }
-
-  //fuerza la aparición de una nueva pieza.
-  def forceNewStone(): Unit = {
-    if (!board.isGameRunning) return
-
-    board = board.forceNewStone(stoneFactory.createRandomStone())
-    history = board :: history
   }
 
   def boardIsRunning: Boolean = board.isGameRunning

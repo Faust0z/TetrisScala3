@@ -82,15 +82,10 @@ case class Stone(points: List[Point], stoneType: String = "Default") {
 
   def moveRight(): Stone = copy(points = points.map(_.moveRight()))
 
-  def rotateLeft(): Stone =
-    if (stoneType == "Square") this
-    else copy(points = points.map(_.rotateAroundCenterLeft(findRotationCenter)))
+  def rotateLeft(): Stone = copy(points = points.map(_.rotateAroundCenterLeft(findRotationCenter)))
 
-  def rotateRight(): Stone =
-    if (stoneType == "Square") this
-    else copy(points = points.map(_.rotateAroundCenterRight(findRotationCenter)))
-
-
+  def rotateRight(): Stone = copy(points = points.map(_.rotateAroundCenterRight(findRotationCenter)))
+  
   //  Se podría incluir el centro de rotación directamente en la declaración de las Stones
   private def findRotationCenter: Point = stoneType match {
     case "T" => points(1)
