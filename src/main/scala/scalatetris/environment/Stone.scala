@@ -106,6 +106,12 @@ case class Stone(points: List[Point], stoneType: String = "Default") {
       copy(points = points.map(_ - Point(xDiff, min.y)))
     }
 
+  def resetPosition(): Stone = {
+    val minX = points.map(_.x).min
+    val minY = points.map(_.y).min
+    copy(points = points.map(p => Point(p.x - minX, p.y - minY)))
+  }
+  
   def doesCollide(other: Stone): Boolean = points.exists(a => other.points.contains(a))
 
   def isInFrame(frame: Size): Boolean = points.forall(_.isInFrame(frame))
