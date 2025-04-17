@@ -28,10 +28,13 @@ class Board private (
   def update(stones: List[Stone]): Board =
     new Board(size, stones, preview, statistics.addTimePoints().applyPendingPoints(), isGameRunning)
 
+  // Método para actualizar directamente la lista de piedras
+  def updateStones(stones: List[Stone]): Board =
+    new Board(size, stones, preview, statistics, isGameRunning)
 
-    //Actualiza el tablero tras eliminar filas o insertar una nueva pieza
-    //Coloca la pieza preview en el centro como nueva piedra activa
-    //Verifica si esa pieza colisiona con otras o está demasiado arriba entonces game over.
+  //Actualiza el tablero tras eliminar filas o insertar una nueva pieza
+  //Coloca la pieza preview en el centro como nueva piedra activa
+  //Verifica si esa pieza colisiona con otras o está demasiado arriba entonces game over.
   def update(stones: List[Stone], numberOfRowsRemoved: Int, preview: Stone): Board = {
     val gameOver = stones.exists(_.doesCollide(this.preview)) || stones.headOption.exists(_.isOnTop)
 
