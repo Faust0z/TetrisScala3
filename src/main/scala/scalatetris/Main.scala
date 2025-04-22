@@ -12,19 +12,41 @@ import java.awt.{GraphicsDevice, GraphicsEnvironment, Toolkit, Dimension => AWTD
 import java.awt.event.{ComponentAdapter, ComponentEvent}
 import scalatetris.ui.MainMenuPanel
 
-
+/**
+ * Objeto principal que inicia y gestiona la aplicación Tetris.
+ * 
+ * Este objeto extiende SimpleSwingApplication, proporcionando la estructura básica
+ * para una aplicación gráfica en Scala. Gestiona la alternancia entre el menú principal
+ * y la pantalla de juego, controla la música, maneja eventos de teclado y pantalla completa.
+ */
 object Main extends SimpleSwingApplication {
-  private var highScore: Int = 0  // Récord personal guardado
+  /** Récord personal guardado entre sesiones de juego */
+  private var highScore: Int = 0
   
+  /**
+   * Obtiene el tamaño de la pantalla actual del sistema.
+   * 
+   * @return Dimensión de la pantalla actual
+   */
   private def getScreenSize: AWTDimension = {
     Toolkit.getDefaultToolkit.getScreenSize
   }
   
-  // Estados del juego
+  /** 
+   * Estados del juego representados como tipos algebraicos.
+   * Determinan si se muestra el menú o se está jugando.
+   */
   private sealed trait GameState
+  /** Estado cuando se muestra el menú principal */
   private case object MenuState extends GameState
+  /** Estado cuando se está jugando activamente */
   private case object PlayingState extends GameState
   
+  /**
+   * Crea y configura la ventana principal de la aplicación.
+   * 
+   * @return Frame que contiene la interfaz principal
+   */
   def top: Frame = {
     // Cargar todos los sonidos
     AudioManager.loadAllSounds()
@@ -63,7 +85,12 @@ object Main extends SimpleSwingApplication {
     var tetrisActorSystem: Option[ActorSystem[Tetris.Command]] = None
     var gamePanel: Option[TetrisPanel] = None
     
-    // Función para iniciar el juego
+    /**
+     * Inicia el juego creando el sistema de actores, panel de juego y configurando eventos.
+     * 
+     * Esta función configura el motor del juego, crea el sistema de actores para procesar
+     * comandos, establece las reacciones a eventos de teclado y actualiza la interfaz.
+     */
     def startGame(): Unit = {
       // Calcular el tamaño de bloque basado en la resolución de la pantalla
       val blockSize = math.min(screenSize.width / 30, screenSize.height / 30)
@@ -83,12 +110,22 @@ object Main extends SimpleSwingApplication {
       panel.focusable = true
       panel.requestFocus()
       
-      // Trait Display requerido por Tetris
+      /**
+       * Trait Display requerido por Tetris para renderizar el estado del juego.
+       */
       trait Display {
+        /**
+         * Renderiza el estado actual del juego.
+         * 
+         * @param data Información del estado que se renderizará
+         */
         def render(data: String): Unit
       }
       
-      // Display que ahora no usa texto, pero se requiere para el actor
+      /**
+       * Implementación de Display que no realiza acciones visuales.
+       * Se utiliza porque el renderizado gráfico se maneja a través de TetrisPanel.
+       */
       class DummyDisplay extends Display {
         override def render(data: String): Unit = ()
       }
@@ -153,7 +190,13 @@ object Main extends SimpleSwingApplication {
       AudioManager.playMusic()
     }
     
-    // Función para mostrar el menú principal
+    /**
+     * Muestra el menú principal, deteniendo cualquier juego en progreso.
+     * 
+     * Esta función termina el sistema de actores del juego si existe,
+     * y configura el panel para mostrar el menú principal con botones
+     * para iniciar el juego o salir.
+     */
     def showMainMenu(): Unit = {
       // Detener el sistema de actores si existe
       tetrisActorSystem.foreach(_.terminate())
@@ -189,6 +232,12 @@ object Main extends SimpleSwingApplication {
     frame
   }
   
+  /**
+   * Alterna entre modo pantalla completa y ventana normal.
+   * 
+   * @param frame El marco principal que se mostrará en pantalla completa
+   * @param device El dispositivo gráfico que gestionará la pantalla completa
+   */
   private def toggleFullScreen(frame: MainFrame, device: GraphicsDevice): Unit = {
     if (device.getFullScreenWindow == null) {
       device.setFullScreenWindow(frame.peer)
@@ -197,7 +246,11 @@ object Main extends SimpleSwingApplication {
     }
   }
   
-  // Método para actualizar y guardar la puntuación más alta
+  /**
+   * Actualiza y guarda la puntuación más alta si la puntuación actual la supera.
+   * 
+   * @param score La puntuación actual para comparar con el récord
+   */
   def updateHighScore(score: Int): Unit = {
     if (score > highScore) {
       highScore = score
@@ -205,6 +258,10 @@ object Main extends SimpleSwingApplication {
     }
   }
   
-  // Método para obtener la puntuación más alta
+  /**
+   * Devuelve la puntuación más alta registrada.
+   * 
+   * @return El valor del récord personal
+   */
   def getHighScore: Int = highScore
 }
