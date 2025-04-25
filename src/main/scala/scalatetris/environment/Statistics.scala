@@ -8,11 +8,11 @@ case class Statistics(startTime: Date, rowsCompleted: Int, score: Int, pendingSc
   def anotherRowHasBeenCompleted(numberOfRows: Int): Statistics = {
     // Primero incrementamos el contador de filas
     val withIncrementedRows = copy(rowsCompleted = rowsCompleted + numberOfRows)
-    
+
     // Después agregamos puntos por las líneas completadas si hay alguna
-    if (numberOfRows > 0) 
+    if (numberOfRows > 0)
       withIncrementedRows.addLinePoints(numberOfRows)
-    else 
+    else
       withIncrementedRows
   }
 
@@ -20,7 +20,7 @@ case class Statistics(startTime: Date, rowsCompleted: Int, score: Int, pendingSc
     copy(score = score + 3)
 
   private def addLinePoints(numberOfRows: Int): Statistics =
-    copy(pendingScore = pendingScore + (500 * numberOfRows * (numberOfRows + 1) / 2))
+    copy(pendingScore = pendingScore + (500 * numberOfRows * (numberOfRows + 3) / 2))
 
   def applyPendingPoints(): Statistics = {
     val increment = math.max(100, pendingScore / 4)
@@ -29,7 +29,7 @@ case class Statistics(startTime: Date, rowsCompleted: Int, score: Int, pendingSc
 
   // Variable para almacenar el tiempo en pausa para esta instancia
   private var pausedTime: Long = 0
-  
+
   def withPausedTime(newPausedTime: Long): Statistics = {
     // Actualizar el tiempo en pausa para esta instancia
     pausedTime = newPausedTime
@@ -45,7 +45,7 @@ case class Statistics(startTime: Date, rowsCompleted: Int, score: Int, pendingSc
 
     // Asegurarnos de que la duración no sea negativa
     val adjustedDuration = math.max(0, duration)
-    
+
     // Formatear el tiempo ajustado
     val formatDate = new Date(adjustedDuration)
 

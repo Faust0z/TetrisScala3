@@ -40,16 +40,6 @@ object Tetris {
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Left if !engine.IsRunning && !engine.boardIsRunning =>
-          engine.backwardInTime()
-          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
-          Behaviors.same
-
-        case Right if !engine.IsRunning && !engine.boardIsRunning =>
-          engine.backIntoTheFuture()
-          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
-          Behaviors.same
-
         case Left if engine.isGameRunning =>
           engine.moveLeft()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
@@ -91,7 +81,7 @@ object Tetris {
           if (engine.isGameRunning) {
             tickCounts += 6 // Bajan 1 bloque por segundo, ajustar según dificultad base
             val speedFactor = math.max(engine.getSpeedFactor, 1)
-            
+
             if (tickCounts % speedFactor == 0) {
               engine.moveDown()
             }

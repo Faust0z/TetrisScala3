@@ -21,12 +21,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   //isRunning: si el juego está activo o en pausa
   private var isRunning: Boolean = true
-  //history: lista de tableros anteriores (para "deshacer").
-  //el board es el tablero actual
-  private var history: List[Board] = board :: Nil
-  //future: lista de tableros a los que se puede volver (para "rehacer").
-  private var future: List[Board] = Nil
-  
+
   // Timestamp de la última pausa para pausar el timer
   private var pauseStartTime: Option[Long] = None
   private var totalPausedTime: Long = 0
@@ -55,7 +50,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       }
       
       board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
-      history = board :: history
       holdUsedThisTurn = false  // Reset del hold para la nueva pieza
       
       if (!board.isGameRunning) {
@@ -101,7 +95,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
     if (newStone.isInFrame(board.size) && !board.stones.tail.exists(_.doesCollide(newStone))) {
       board = board.update(newStone :: board.stones.tail)
-      history = board :: history
       true
     } else {
       false
@@ -144,7 +137,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     rotatedStoneOpt match {
       case Some(rotatedStone) =>
         board = board.update(rotatedStone :: board.stones.tail)
-        history = board :: history
         true
       case None => false
     }
@@ -179,7 +171,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
         val remainingStones = board.stones.tail
         // Agregar la piedra del hold como la activa
         board = board.updateStones(newCurrentStone :: remainingStones)
-        history = board :: history
         holdUsedThisTurn = true
       }
     } else {
@@ -189,7 +180,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       val remainingStones = board.stones.tail
       board = board.updateStones(remainingStones)
       board = board.forceNewStone(stoneFactory.createRandomStone())
-      history = board :: history
       holdUsedThisTurn = true
     }
     
@@ -200,15 +190,13 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   // Obtener la pieza guardada
   def getHoldStone: Option[Stone] = holdStone
 
-  //Reinicia el tablero y limpia historial.
+  //Reinicia el tablero.
   def restart(): Unit = {
     board = new Board(
       boardSize,
       stoneFactory.createRandomStone(),
       stoneFactory.createRandomStone()
     )
-    history = board :: Nil
-    future = Nil
     isRunning = true
     currentLevel = 0
     holdStone = None
@@ -268,30 +256,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   //esta es la proxima pieza para aparecer
   def nextStone: Stone = board.preview
 
-  //Permite al jugador retroceder y avanzar entre estados anteriores del tablero.
-  //Utiliza las listas history y future.
-
-  def backwardInTime(): Unit = {
-    history match {
-      case Nil =>
-      case head :: tail =>
-        future = board :: future
-        board = head
-        history = tail
-    }
-    pause()
-  }
-
-  def backIntoTheFuture(): Unit = {
-    future match {
-      case Nil =>
-      case head :: tail =>
-        history = board :: history
-        board = head
-        future = tail
-    }
-    pause()
-  }
 
   //primero recorre de abajo hacia arriba.
   //despues chequea si una fila está llena la elimina.
