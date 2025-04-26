@@ -8,63 +8,63 @@ import java.awt.{BasicStroke, Color, Font, FontMetrics, GradientPaint, Graphics2
 import scala.swing.event.{Key, KeyPressed, MouseClicked, MouseMoved, MouseDragged}
 
 /** 
- * Panel that implements the main menu of the game.
+ * Panel que implementa el menú principal del juego.
  * 
- * This panel handles:
- * - The main menu interface
- * - Interactive buttons
- * - The controls screen
- * - Volume control
- * - Visual effects and animations
+ * Este panel maneja:
+ * - La interfaz del menú principal
+ * - Botones interactivos
+ * - La pantalla de controles
+ * - Control de volumen
+ * - Efectos visuales y animaciones
  * 
- * @param onStartGame Function to execute when the game starts
- * @param onQuit Function to execute when the game quits
+ * @param onStartGame Función a ejecutar cuando inicia el juego
+ * @param onQuit Función a ejecutar cuando se sale del juego
  */
 class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
   
-  /** Colors of the menu theme */
-  private val backgroundColor = new Color(0, 0, 30)  // Dark blue
-  private val buttonColor = new Color(0, 0, 60)      // Blue for buttons
-  private val highlightColor = new Color(0, 191, 255) // Bright cyan
-  private val titleColor = new Color(255, 50, 50)     // Bright red for the title
+  /** Colores del tema del menú */
+  private val backgroundColor = new Color(0, 0, 30)  // Azul oscuro
+  private val buttonColor = new Color(0, 0, 60)      // Azul para botones
+  private val highlightColor = new Color(0, 191, 255) // Cian brillante
+  private val titleColor = new Color(255, 50, 50)     // Rojo brillante para el título
   
-  /** List of main menu buttons */
+  /** Lista de botones del menú principal */
   private val buttons = List(
     new MenuButton("JUGAR", 0),
     new MenuButton("CONTROLES", 1),
     new MenuButton("SALIR", 2)
   )
   
-  /** Index of the button under the cursor, if any */
+  /** Índice del botón bajo el cursor, si hay */
   private var hoveredButton: Option[Int] = None
-  /** Indicates if the controls screen is being shown */
+  /** Indica si se está mostrando la pantalla de controles */
   private var showControls: Boolean = false
-  /** Indicates if the cursor is over the back to menu button */
+  /** Indica si el cursor está sobre el botón de volver al menú */
   private var backButtonHovered: Boolean = false
   
-  /** Rectangle that defines the volume control area */
+  /** Rectángulo que define el área de control de volumen */
   private var volumeSliderRect: Rectangle = new Rectangle(0, 0, 0, 0)
-  /** Indicates if the volume control is being dragged */
+  /** Indica si se está arrastrando el control de volumen */
   private var isDraggingVolume: Boolean = false
-  /** Current position of the volume control (0-100) */
+  /** Posición actual del control de volumen (0-100) */
   private var volumeHandlePosition: Int = (AudioManager.getVolume * 100).toInt
   
-  // Register mouse and keyboard events
+  // Registrar eventos de ratón y teclado
   listenTo(mouse.clicks, mouse.moves, keys)
   
   /** 
-   * Event handler for the panel.
-   * Processes mouse and keyboard events for:
-   * - Detecting hover over buttons
-   * - Handling button clicks
-   * - Controlling the volume
-   * - Handling the ESC key
+   * Manejador de eventos para el panel.
+   * Procesa eventos de ratón y teclado para:
+   * - Detectar hover sobre botones
+   * - Manejar clics en botones
+   * - Controlar el volumen
+   * - Manejar la tecla ESC
    */
   reactions += {
     case e: MouseMoved =>
       updateHoveredButton(e.point)
       if (showControls) {
-        // Check if the mouse is over the back button
+        // Verificar si el ratón está sobre el botón de volver
         val panelWidth = math.min(size.width - 100, 600)
         val panelHeight = size.height - 200
         val panelX = (size.width - panelWidth) / 2
@@ -106,14 +106,14 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
         val backButtonX = panelX + (panelWidth - backButtonWidth) / 2
         val backButtonY = panelY + panelHeight - 60
         
-        // If the back button is clicked
+        // Si se hace clic en el botón de volver
         if (e.point.x >= backButtonX && e.point.x <= (backButtonX + backButtonWidth) &&
             e.point.y >= backButtonY && e.point.y <= (backButtonY + backButtonHeight)) {
           showControls = false
           repaint()
         }
       } else if (volumeSliderRect.contains(e.point)) {
-        // Click on the volume control
+        // Clic en el control de volumen
         val sliderX = e.point.x - volumeSliderRect.x
         volumeHandlePosition = (sliderX * 100 / volumeSliderRect.width).toInt
         AudioManager.setVolume(volumeHandlePosition / 100.0f)
@@ -133,27 +133,27 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
   }
   
   /** 
-   * Updates the button under the cursor.
+   * Actualiza el botón bajo el cursor.
    * 
-   * @param point Current cursor position
+   * @param point Posición actual del cursor
    */
   private def updateHoveredButton(point: Point): Unit = {
     hoveredButton = buttons.find(_.contains(point)).map(_.index)
   }
   
   /** 
-   * Draws all components of the panel.
+   * Dibuja todos los componentes del panel.
    * 
-   * @param g Graphics context where to draw
+   * @param g Contexto gráfico donde dibujar
    */
   override def paintComponent(g: Graphics2D): Unit = {
     super.paintComponent(g)
     
-    // Set rendering hints
+    // Establecer opciones de renderizado
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
     g.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
     
-    // Background
+    // Fondo
     val gradient = new GradientPaint(0, 0, backgroundColor, size.width, size.height, new Color(0, 0, 50))
     g.setPaint(gradient)
     g.fillRect(0, 0, size.width, size.height)
@@ -168,15 +168,15 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
   }
   
   /** 
-   * Draws the game logo with visual effects.
-   * Includes shadow effects, neon colors and Tetris-style blocks.
+   * Dibuja el logo del juego con efectos visuales.
+   * Incluye efectos de sombra, colores neón y bloques estilo Tetris.
    * 
-   * @param g Graphics context where to draw
+   * @param g Contexto gráfico donde dibujar
    */
   private def drawLogo(g: Graphics2D): Unit = {
     val title = "TETRIS"
     
-    // Set logo size and position
+    // Establecer tamaño y posición del logo
     val titleSize = math.min(size.width / 8, 100)
     g.setFont(new Font("Impact", Font.BOLD, titleSize))
     
@@ -185,17 +185,17 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     val x = (size.width - titleWidth) / 2
     val y = size.height / 4
     
-    // Shadow effect for the title
+    // Efecto de sombra para el título
     g.setColor(Color.BLACK)
     g.drawString(title, x + 4, y + 4)
     
-    // Draw letters with Tetris block effects
+    // Dibujar letras con efectos de bloques Tetris
     val letters = title.toCharArray
     
-    // Calculate the total width that all letters will occupy
+    // Calcular el ancho total que ocuparán todas las letras
     val totalLetterWidth = letters.map(letter => fm.charWidth(letter)).sum
     
-    // Calculate the extra space between letters to distribute them evenly
+    // Calcular el espacio extra entre letras para distribuirlas uniformemente
     val extraSpace = (titleWidth - totalLetterWidth) / (letters.length - 1)
     
     var currentX = x
@@ -203,32 +203,32 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     for (i <- letters.indices) {
       val letterWidth = fm.charWidth(letters(i))
       
-      // Different colors for each letter
+      // Colores diferentes para cada letra
       val letterColor = i match {
-        case 0 => new Color(255, 0, 0)      // T: Red
-        case 1 => new Color(255, 165, 0)    // E: Orange
-        case 2 => new Color(0, 255, 255)    // T: Cyan
-        case 3 => new Color(0, 255, 0)      // R: Green
+        case 0 => new Color(255, 0, 0)      // T: Rojo
+        case 1 => new Color(255, 165, 0)    // E: Naranja
+        case 2 => new Color(0, 255, 255)    // T: Cian
+        case 3 => new Color(0, 255, 0)      // R: Verde
         case 4 => new Color(255, 0, 255)    // I: Magenta
-        case 5 => new Color(255, 255, 0)    // S: Yellow
+        case 5 => new Color(255, 255, 0)    // S: Amarillo
         case _ => Color.WHITE
       }
       
-      // Correct the position of the I letter to align it correctly
-      val letterY = if (i == 4) y - 2 else y  // Slightly adjust the position of the I
+      // Corregir la posición de la letra I para alinearla correctamente
+      val letterY = if (i == 4) y - 2 else y  // Ajuste leve para la I
       
       g.setColor(letterColor)
       g.drawString(letters(i).toString, currentX, letterY)
       
-      // Add a block border to each letter
+      // Añadir un borde de bloque a cada letra
       g.setStroke(new BasicStroke(2))
       g.drawRect(currentX - 2, y - titleSize + 10, letterWidth + 4, titleSize)
       
-      // Advance to the next position with uniform spacing
+      // Avanzar a la siguiente posición con espacio uniforme
       currentX += letterWidth + extraSpace
     }
     
-    // Subtitle
+    // Subtítulo
     g.setFont(new Font("Arial", Font.PLAIN, titleSize / 3))
     val subtitle = "SCALA EDITION"
     val subtitleWidth = g.getFontMetrics.stringWidth(subtitle)
@@ -237,10 +237,10 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
   }
   
   /** 
-   * Draws the main menu buttons with visual effects.
-   * Includes hover effects, shadows and bright borders.
+   * Dibuja los botones del menú principal con efectos visuales.
+   * Incluye efectos de hover, sombras y bordes brillantes.
    * 
-   * @param g Graphics context where to draw
+   * @param g Contexto gráfico donde dibujar
    */
   private def drawButtons(g: Graphics2D): Unit = {
     val buttonWidth = math.min(size.width / 3, 300)
@@ -252,16 +252,16 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
       val y = startY + button.index * spacing
       button.update((size.width - buttonWidth) / 2, y, buttonWidth, buttonHeight)
       
-      // Button background
+      // Fondo del botón
       g.setColor(if (hoveredButton.contains(button.index)) buttonColor.brighter else buttonColor)
       g.fillRect(button.x, button.y, button.width, button.height)
       
-      // Button border
+      // Borde del botón
       g.setColor(if (hoveredButton.contains(button.index)) highlightColor else Color.GRAY)
       g.setStroke(new BasicStroke(3))
       g.drawRect(button.x, button.y, button.width, button.height)
       
-      // Button text
+      // Texto del botón
       val buttonFontSize = buttonHeight / 2
       g.setFont(new Font("Impact", Font.BOLD, buttonFontSize))
       val fm = g.getFontMetrics
@@ -269,22 +269,22 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
       val textX = button.x + (button.width - textWidth) / 2
       val textY = button.y + (button.height + buttonFontSize) / 2
       
-      // Text shadow
+      // Sombra del texto
       g.setColor(Color.BLACK)
       g.drawString(button.text, textX + 2, textY + 2)
       
-      // Main text
+      // Texto principal
       g.setColor(if (hoveredButton.contains(button.index)) highlightColor else Color.WHITE)
       g.drawString(button.text, textX, textY)
     }
   }
   
   /** 
-   * Draws the game controls screen.
-   * Displays a list of all keys and their functions,
-   * with visual effects and a back to menu button.
+   * Dibuja la pantalla de controles del juego.
+   * Muestra una lista de todas las teclas y sus funciones,
+   * con efectos visuales y un botón para volver al menú.
    * 
-   * @param g Graphics context where to draw
+   * @param g Contexto gráfico donde dibujar
    */
   private def drawControls(g: Graphics2D): Unit = {
     val panelWidth = math.min(size.width - 100, 600)
@@ -292,7 +292,7 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     val panelX = (size.width - panelWidth) / 2
     val panelY = 100
     
-    // Background panel
+    // Panel de fondo
     g.setColor(new Color(0, 0, 40, 220))
     g.fillRect(panelX, panelY, panelWidth, panelHeight)
     
@@ -300,7 +300,7 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     g.setStroke(new BasicStroke(3))
     g.drawRect(panelX, panelY, panelWidth, panelHeight)
     
-    // Title
+    // Título
     val titleFontSize = 40
     g.setFont(new Font("Impact", Font.BOLD, titleFontSize))
     val title = "CONTROLES"
@@ -312,7 +312,7 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     g.setColor(highlightColor)
     g.drawString(title, panelX + (panelWidth - titleWidth) / 2, panelY + 50)
     
-    // Controls
+    // Controles
     val controls = List(
       ("A", "Mover izquierda"),
       ("D", "Mover derecha"),
@@ -332,45 +332,45 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     
     var yPos = panelY + 120
     val spacing = 40
-    val keyWidth = 50  // Increased to accommodate longer keys like "ESC" and "F11"
+    val keyWidth = 50  // Aumentado para acomodar teclas largas como "ESC" y "F11"
     
     controls.foreach { case (key, action) =>
-      // Key background
+      // Fondo de la tecla
       g.setColor(new Color(40, 40, 40))
       g.fillRect(panelX + 50, yPos - fontSize, keyWidth, fontSize + 10)
       
-      // Key border
+      // Borde de la tecla
       g.setColor(new Color(100, 100, 100))
       g.setStroke(new BasicStroke(1))
       g.drawRect(panelX + 50, yPos - fontSize, keyWidth, fontSize + 10)
       
-      // Key text
+      // Texto de la tecla
       g.setColor(Color.WHITE)
       g.drawString(key, panelX + 50 + (keyWidth - g.getFontMetrics.stringWidth(key)) / 2, yPos)
       
-      // Action
+      // Acción
       g.setColor(Color.LIGHT_GRAY)
       g.drawString(action, panelX + 50 + keyWidth + 20, yPos)
       
       yPos += spacing
     }
     
-    // Back to menu button instead of just text
+    // Botón para volver al menú en vez de solo texto
     val backButtonWidth = 200
     val backButtonHeight = 40
     val backButtonX = panelX + (panelWidth - backButtonWidth) / 2
     val backButtonY = panelY + panelHeight - 60
     
-    // Button background - now with hover effect
+    // Fondo del botón - ahora con efecto hover
     g.setColor(if (backButtonHovered) new Color(0, 0, 100) else new Color(0, 0, 60))
     g.fillRect(backButtonX, backButtonY, backButtonWidth, backButtonHeight)
     
-    // Button border - now with hover effect
+    // Borde del botón - ahora con efecto hover
     g.setColor(if (backButtonHovered) highlightColor.brighter else highlightColor)
     g.setStroke(new BasicStroke(2))
     g.drawRect(backButtonX, backButtonY, backButtonWidth, backButtonHeight)
     
-    // Button text
+    // Texto del botón
     g.setFont(new Font("Impact", Font.BOLD, 20))
     val backText = "VOLVER AL MENÚ"
     val backWidth = g.getFontMetrics.stringWidth(backText)
@@ -382,11 +382,11 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
   }
   
   /** 
-   * Draws the volume slider.
-   * Includes a progress bar, a slider control and
-   * displays the current volume percentage.
+   * Dibuja el control de volumen.
+   * Incluye una barra de progreso, un control deslizante y
+   * muestra el porcentaje de volumen actual.
    * 
-   * @param g Graphics context where to draw
+   * @param g Contexto gráfico donde dibujar
    */
   private def drawVolumeSlider(g: Graphics2D): Unit = {
     val sliderWidth = 200
@@ -394,31 +394,31 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     val sliderX = (size.width - sliderWidth) / 2
     val sliderY = size.height - 70
     
-    // Update slider rectangle for event detection
+    // Actualizar el rectángulo del slider para detección de eventos
     volumeSliderRect = new Rectangle(sliderX, sliderY - 5, sliderWidth, sliderHeight + 10)
     
-    // Draw "VOLUME" label
+    // Dibujar etiqueta "VOLUMEN"
     g.setFont(new Font("Arial", Font.BOLD, 16))
     g.setColor(Color.WHITE)
     val volumeText = "VOLUMEN"
     val textWidth = g.getFontMetrics.stringWidth(volumeText)
     g.drawString(volumeText, sliderX + (sliderWidth - textWidth) / 2, sliderY - 15)
     
-    // Draw slider background
+    // Fondo del slider
     g.setColor(new Color(0, 0, 60))
     g.fillRect(sliderX, sliderY, sliderWidth, sliderHeight)
     
-    // Draw slider border
+    // Borde del slider
     g.setColor(highlightColor)
     g.setStroke(new BasicStroke(1))
     g.drawRect(sliderX, sliderY, sliderWidth, sliderHeight)
     
-    // Draw volume level
+    // Nivel de volumen
     g.setColor(highlightColor)
     val volumeWidth = (sliderWidth * volumeHandlePosition / 100.0).toInt
     g.fillRect(sliderX, sliderY, volumeWidth, sliderHeight)
     
-    // Draw slider control
+    // Control deslizante
     val handleWidth = 10
     val handleHeight = 20
     val handleX = sliderX + volumeWidth - handleWidth / 2
@@ -429,7 +429,7 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     g.setColor(Color.GRAY)
     g.drawRect(handleX, handleY, handleWidth, handleHeight)
     
-    // Display percentage
+    // Mostrar porcentaje
     g.setFont(new Font("Arial", Font.PLAIN, 14))
     g.setColor(Color.WHITE)
     val percentText = s"${volumeHandlePosition}%"
@@ -437,28 +437,28 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
   }
   
   /** 
-   * Inner class that represents a menu button.
+   * Clase interna que representa un botón del menú.
    * 
-   * @param text Text to display on the button
-   * @param index Index of the button in the menu
+   * @param text Texto a mostrar en el botón
+   * @param index Índice del botón en el menú
    */
   private class MenuButton(val text: String, val index: Int) {
-    /** X position of the button */
+    /** Posición X del botón */
     var x: Int = 0
-    /** Y position of the button */
+    /** Posición Y del botón */
     var y: Int = 0
-    /** Width of the button */
+    /** Ancho del botón */
     var width: Int = 0
-    /** Height of the button */
+    /** Alto del botón */
     var height: Int = 0
     
     /** 
-     * Updates the dimensions and position of the button.
+     * Actualiza las dimensiones y posición del botón.
      * 
-     * @param newX New X position
-     * @param newY New Y position
-     * @param newWidth New width
-     * @param newHeight New height
+     * @param newX Nueva posición X
+     * @param newY Nueva posición Y
+     * @param newWidth Nuevo ancho
+     * @param newHeight Nuevo alto
      */
     def update(newX: Int, newY: Int, newWidth: Int, newHeight: Int): Unit = {
       x = newX
@@ -468,10 +468,10 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     }
     
     /** 
-     * Checks if a point is inside the button area.
+     * Verifica si un punto está dentro del área del botón.
      * 
-     * @param point Point to check
-     * @return true if the point is inside the button
+     * @param point Punto a verificar
+     * @return true si el punto está dentro del botón
      */
     def contains(point: Point): Boolean = {
       point.x >= x && point.x <= (x + width) &&
