@@ -5,39 +5,39 @@ import scalatetris.environment.{Point, Stone}
 import scala.swing.TextArea
 
 /**
- * Trait that defines the interface for displaying the game state.
+ * Trait que define la interfaz para mostrar el estado del juego.
  *
- * This interface allows for different visualization implementations,
- * such as text mode, graphic mode, or even a version without visual output.
+ * Esta interfaz permite diferentes implementaciones de visualización,
+ * como modo texto, modo gráfico o incluso una versión sin salida visual.
  */
 trait Display {
   /**
-   * Renders the current game state.
+   * Renderiza el estado actual del juego.
    *
-   * @param stones List of pieces on the board
-   * @param points List of occupied points on the board
-   * @param statistics Current game statistics
-   * @param isGameRunning Current game state (true if active)
+   * @param stones Lista de piezas en el tablero
+   * @param points Lista de puntos ocupados en el tablero
+   * @param statistics Estadísticas actuales del juego
+   * @param isGameRunning Estado actual del juego (true si está activo)
    */
   def render(stones: List[Stone], points: List[Point], statistics: Statistics, isGameRunning: Boolean): Unit
 }
 
 /**
- * Display implementation that displays the game in text mode using Swing.
+ * Implementación de Display que muestra el juego en modo texto usando Swing.
  *
- * This implementation is useful for debugging or as an alternative display
- * when graphic mode is not available.
+ * Esta implementación es útil para depuración o como una visualización alternativa
+ * cuando el modo gráfico no está disponible.
  *
- * @param area Text area where the game will be displayed
+ * @param area Área de texto donde se mostrará el juego
  */
 class SwingDisplay(area: TextArea) extends Display {
   /**
-   * Renders the game state in text mode.
+   * Renderiza el estado del juego en modo texto.
    *
-   * Displays an ASCII representation of the board where:
-   * - 'x' represents an occupied block
-   * - ' ' represents an empty space
-   * - '|' and '-' represent the board's borders
+   * Muestra una representación ASCII del tablero donde:
+   * - 'x' representa un bloque ocupado
+   * - ' ' representa un espacio vacío
+   * - '|' y '-' representan los bordes del tablero
    */
   def render(stones: List[Stone], points: List[Point], statistics: Statistics, isGameRunning: Boolean): Unit = {
     // Versión textual provisional
@@ -63,10 +63,10 @@ class SwingDisplay(area: TextArea) extends Display {
 }
 
 /**
- * Display implementation that does not perform any visualization.
+ * Implementación de Display que no realiza ninguna visualización.
  *
- * This implementation is used when visualization is handled externally,
- * for example, when TetrisPanel is used for graphical rendering.
+ * Esta implementación se usa cuando la visualización se maneja externamente,
+ * por ejemplo, cuando se utiliza TetrisPanel para el renderizado gráfico.
  */
 class DummyDisplay extends Display {
   override def render(stones: List[Stone], points: List[Point], statistics: Statistics, isGameRunning: Boolean): Unit = {
