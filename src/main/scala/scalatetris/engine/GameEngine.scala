@@ -4,32 +4,48 @@ import scalatetris.environment.{Board, Size, StoneFactory, Stone, Point, Statist
 import scalatetris.AudioManager
 import scala.util.Try
 
-//le paso por parametro el tamaño del tablero y la fabrica de piezas de tetris
+/**
+ * Motor principal del juego Tetris que maneja toda la lógica del juego.
+ * 
+ * Esta clase es responsable de:
+ * - Gestionar el estado del tablero
+ * - Controlar el movimiento de las piezas
+ * - Manejar las colisiones
+ * - Gestionar el sistema de niveles y dificultad
+ * - Mantener el historial de movimientos
+ * 
+ * @param boardSize Tamaño del tablero de juego
+ * @param stoneFactory Fábrica que genera las piezas de Tetris
+ */
 sealed class GameEngine(val boardSize: Size) {
+  /** Estado actual del tablero */
   private var board: Board = new Board(
     boardSize,
     StoneFactory.createRandomStone(),
     StoneFactory.createRandomStone()
   )
 
-  // Nivel actual del juego (0-29)
+  /** Nivel actual del juego (0-29) */
   private var currentLevel: Int = 0
   
-  // Pieza guardada/reservada (hold)
+  /** Pieza guardada en el hold */
   private var holdStone: Option[Stone] = None
+  /** Indica si ya se usó el hold en este turno */
   private var holdUsedThisTurn: Boolean = false
 
-  //isRunning: si el juego está activo o en pausa
+  /** Indica si el juego está activo o en pausa */
   private var isRunning: Boolean = true
 
   // Timestamp de la última pausa para pausar el timer
   private var pauseStartTime: Option[Long] = None
+  /** Tiempo total acumulado en pausa */
   private var totalPausedTime: Long = 0
 
-
-  /*
-  Intenta mover la pieza activa hacia abajo, sino puede moverse (colisión), fija la pieza y genera una nueva.
-  si hay una fila completa la elimina con removeFullRows.
+  /** 
+   * Intenta mover la pieza activa hacia abajo.
+   * 
+   * Si la pieza no puede moverse más (colisión), la fija en su posición
+   * y genera una nueva pieza. Si hay filas completas, las elimina.
    */
   def moveDown(): Unit = {
     // No permitas movimientos si el juego ya terminó
@@ -59,7 +75,13 @@ sealed class GameEngine(val boardSize: Size) {
     }
   }
   
-  // Actualizar el nivel basado en las líneas completadas
+  /** 
+   * Actualiza el nivel del juego basado en las líneas completadas.
+   * 
+   * El nivel aumenta cada 10 líneas completadas, hasta un máximo de 29.
+   * 
+   * @param rowsCleared Número de filas completadas en la última jugada
+   */
   private def updateLevel(rowsCleared: Int): Unit = {
     val totalRows = board.statistics.rowsCompleted + rowsCleared
     val newLevel = math.min((totalRows / 10).toInt, 29) // Máximo nivel 29
@@ -68,10 +90,24 @@ sealed class GameEngine(val boardSize: Size) {
     }
   }
   
-  // Obtiene el nivel actual
+  /** 
+   * Obtiene el nivel actual del juego.
+   * 
+   * @return El nivel actual (0-29)
+   */
   def getLevel: Int = currentLevel
   
-  // Obtiene el factor de velocidad basado en el nivel actual
+  /** 
+   * Calcula el factor de velocidad basado en el nivel actual.
+   * 
+   * La velocidad aumenta con cada nivel siguiendo una fórmula basada en el NES Tetris:
+   * - Niveles 0-9: Disminuye de 48 a 3 frames
+   * - Niveles 10-19: Disminuye de 28 a 8 frames
+   * - Niveles 20-28: Disminuye de 8 a 5 frames
+   * - Nivel 29+: "Kill screen" - caída inmediata
+   * 
+   * @return Factor de velocidad para el nivel actual
+   */
   def getSpeedFactor: Int = {
     // Fórmula basada en la velocidad del NES Tetris con algunas modificaciones
     if (currentLevel < 10) {
@@ -85,7 +121,12 @@ sealed class GameEngine(val boardSize: Size) {
     }
   }
 
-  //move() va a chequear si la nueva posición esta dentro del tablero y sin colisiones.
+  /** 
+   * Verifica si un movimiento es válido y lo ejecuta.
+   * 
+   * @param action Función que transforma la pieza actual
+   * @return true si el movimiento fue exitoso, false en caso contrario
+   */
   private def move(action: Stone => Stone): Boolean = {
     // No permitas movimientos si el juego ya terminó
     if (!board.isGameRunning) return false
@@ -101,21 +142,32 @@ sealed class GameEngine(val boardSize: Size) {
     }
   }
 
-  //Llaman a move() con los diferentes movimientos a la pieza actual.
-  //estos movimientos estan dentro de Stone donde se especifica como se mueven la piezas
+  /** 
+   * Mueve la pieza actual hacia la izquierda si es posible.
+   * Reproduce un sonido si el movimiento es exitoso.
+   */
   def moveLeft(): Unit = {
     if (move(_.moveLeft())) {
       AudioManager.playSideSound()
     }
   }
 
+  /** 
+   * Mueve la pieza actual hacia la derecha si es posible.
+   * Reproduce un sonido si el movimiento es exitoso.
+   */
   def moveRight(): Unit = {
     if (move(_.moveRight())) {
       AudioManager.playSideSound()
     }
   }
 
-  // Se define la rotación hacia la izquierda o la derecha según el atributo. Si es un cuadrado no se rota
+  /** 
+   * Implementa la lógica de rotación de piezas.
+   * 
+   * @param clockwise true para rotar en sentido horario, false para antihorario
+   * @return true si la rotación fue exitosa, false en caso contrario
+   */
   private def rotate(clockwise: Boolean): Boolean = {
     val currentStone = board.stones.head
     if (currentStone.stoneType == "Square") return false
@@ -142,19 +194,32 @@ sealed class GameEngine(val boardSize: Size) {
     }
   }
 
+  /** 
+   * Rota la pieza actual hacia la izquierda si es posible.
+   * Reproduce un sonido si la rotación es exitosa.
+   */
   def rotateLeft(): Unit = {
     if (rotate(false)) {
       AudioManager.playSpinSound()
     }
   }
 
+  /** 
+   * Rota la pieza actual hacia la derecha si es posible.
+   * Reproduce un sonido si la rotación es exitosa.
+   */
   def rotateRight(): Unit = {
     if (rotate(true)) {
       AudioManager.playSpinSound()
     }
   }
   
-  // Hold/guardar pieza actual
+  /** 
+   * Implementa la funcionalidad de "hold" (guardar pieza).
+   * 
+   * Permite guardar la pieza actual para usarla después.
+   * Solo se puede usar una vez por turno (hasta que la pieza se fije).
+   */
   def holdCurrentStone(): Unit = {
     if (!board.isGameRunning || holdUsedThisTurn) return
     
@@ -179,6 +244,7 @@ sealed class GameEngine(val boardSize: Size) {
       // Actualizar el tablero solo con las piezas fijas
       val remainingStones = board.stones.tail
       board = board.updateStones(remainingStones)
+
       board = board.forceNewStone(StoneFactory.createRandomStone())
       holdUsedThisTurn = true
     }
@@ -187,13 +253,26 @@ sealed class GameEngine(val boardSize: Size) {
     AudioManager.playSideSound()
   }
   
-  // Obtener la pieza guardada
+  /** 
+   * Obtiene la pieza actualmente guardada en hold.
+   * 
+   * @return Option con la pieza guardada, o None si no hay ninguna
+   */
   def getHoldStone: Option[Stone] = holdStone
 
-  //Reinicia el tablero.
+  /** 
+   * Reinicia el juego a su estado inicial.
+   * 
+   * - Limpia el tablero
+   * - Reinicia el nivel
+   * - Limpia el historial
+   * - Reinicia el hold
+   * - Reinicia los contadores de tiempo
+   */
   def restart(): Unit = {
     board = new Board(
       boardSize,
+
       StoneFactory.createRandomStone(),
       StoneFactory.createRandomStone()
     )
@@ -205,17 +284,28 @@ sealed class GameEngine(val boardSize: Size) {
     pauseStartTime = None
   }
 
+  /** @return true si el tablero está en estado de juego activo */
   def boardIsRunning: Boolean = board.isGameRunning
 
+  /** @return true si el juego no está en pausa */
   def IsRunning: Boolean = isRunning
 
-  //si esta o no corriendo
+  /** @return true si el juego está activo y no en pausa */
   def isGameRunning: Boolean = board.isGameRunning && isRunning
 
+  /** @return Lista de todas las piezas en el tablero */
   def stones: List[Stone] = board.stones
 
+  /** @return Lista de todos los puntos ocupados en el tablero */
   def points: List[Point] = board.points
 
+  /** 
+   * Obtiene las estadísticas actuales del juego.
+   * 
+   * Incluye el tiempo pausado en el cálculo del tiempo total.
+   * 
+   * @return Estadísticas actualizadas
+   */
   def statistics: Statistics = {
     val now = System.currentTimeMillis()
     
@@ -229,6 +319,13 @@ sealed class GameEngine(val boardSize: Size) {
     }
   }
 
+  /** 
+   * Pausa el juego.
+   * 
+   * - Detiene la música
+   * - Guarda el timestamp de inicio de pausa
+   * - Reproduce el sonido de pausa
+   */
   def pause(): Unit = {
     if (isRunning) {
       isRunning = false
@@ -238,6 +335,13 @@ sealed class GameEngine(val boardSize: Size) {
     }
   }
 
+  /** 
+   * Continúa el juego desde la pausa.
+   * 
+   * - Actualiza el tiempo total en pausa
+   * - Reanuda la música
+   * - Reproduce el sonido de continuar
+   */
   def continue(): Unit = {
     // Solo permite continuar si el tablero todavía está en juego
     if (!board.isGameRunning) return
@@ -253,13 +357,19 @@ sealed class GameEngine(val boardSize: Size) {
     AudioManager.playResumeSound()
   }
 
-  //esta es la proxima pieza para aparecer
+  /** @return La siguiente pieza que aparecerá */
   def nextStone: Stone = board.preview
 
-
-  //primero recorre de abajo hacia arriba.
-  //despues chequea si una fila está llena la elimina.
-  //por ultimo las filas superiores bajan una posición.
+  /** 
+   * Elimina las filas completas del tablero.
+   * 
+   * Recorre el tablero de abajo hacia arriba, eliminando las filas
+   * que están completas y haciendo caer las superiores.
+   * 
+   * @param points Lista de puntos ocupados en el tablero
+   * @param height Altura actual siendo procesada
+   * @return Tupla con los puntos actualizados y el número de filas eliminadas
+   */
   private def removeFullRows(points: List[Point], height: Int = board.size.height): (List[Point], Int) =
     points match {
       case Nil => (Nil, 0)

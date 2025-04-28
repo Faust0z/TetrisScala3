@@ -2,7 +2,16 @@ package scalatetris.environment
 
 import java.util.Calendar
 
-//aca se define como funciona toda la interfaz del tablero de tetris
+/**
+ * Clase que representa el tablero de juego de Tetris.
+ *
+ * Esta clase es inmutable y maneja:
+ * - El estado actual del tablero
+ * - Las piezas activas y fijas
+ * - La siguiente pieza (preview)
+ * - Las estadísticas del juego
+ * - El estado de juego (activo/terminado)
+ */
 class Board private (
                       val size: Size,
                       val stones: List[Stone],
@@ -10,7 +19,13 @@ class Board private (
                       val statistics: Statistics,
                       val isGameRunning: Boolean) {
 
-
+  /**
+   * Constructor principal que inicializa un nuevo tablero.
+   *
+   * @param size Dimensiones del tablero
+   * @param firstStone Primera pieza activa
+   * @param firstPreview Primera pieza en preview
+   */
   def this(size: Size, firstStone: Stone, firstPreview: Stone) =
     this(
       size,
@@ -20,21 +35,51 @@ class Board private (
       isGameRunning = true
     )
 
+  /**
+   * Calcula el punto central superior del tablero.
+   *
+   * @return Punto en el centro de la fila superior
+   */
   private def topCenter: Point = Point(size.width / 2, 0)
 
-  //Devuelve todos los puntos ocupados en el tablero por las piezas fijadas y la actual.
+  /**
+   * Obtiene todos los puntos ocupados en el tablero.
+   *
+   * @return Lista de puntos ocupados por todas las piezas
+   */
   def points: List[Point] = stones.flatMap(_.points)
-  //aca va a actualizar el estado del tablero con la lista de piezas
+
+  /**
+   * Actualiza el estado del tablero con una nueva lista de piezas.
+   *
+   * @param stones Nueva lista de piezas
+   * @return Nuevo tablero con las piezas actualizadas y estadísticas incrementadas
+   */
   def update(stones: List[Stone]): Board =
     new Board(size, stones, preview, statistics.addTimePoints().applyPendingPoints(), isGameRunning)
 
-  // Método para actualizar directamente la lista de piedras
+  /**
+   * Actualiza directamente la lista de piezas sin modificar otros estados.
+   *
+   * @param stones Nueva lista de piezas
+   * @return Nuevo tablero con las piezas actualizadas
+   */
   def updateStones(stones: List[Stone]): Board =
     new Board(size, stones, preview, statistics, isGameRunning)
 
-  //Actualiza el tablero tras eliminar filas o insertar una nueva pieza
-  //Coloca la pieza preview en el centro como nueva piedra activa
-  //Verifica si esa pieza colisiona con otras o está demasiado arriba entonces game over.
+  /**
+   * Actualiza el tablero después de eliminar filas o insertar una nueva pieza.
+   *
+   * Este método:
+   * - Coloca la pieza preview en el centro como nueva pieza activa
+   * - Verifica si hay game over (colisión o pieza en fila superior)
+   * - Actualiza las estadísticas según las filas eliminadas
+   *
+   * @param stones Lista de piezas fijas
+   * @param numberOfRowsRemoved Número de filas que se eliminaron
+   * @param preview Nueva pieza para el preview
+   * @return Nuevo tablero actualizado
+   */
   def update(stones: List[Stone], numberOfRowsRemoved: Int, preview: Stone): Board = {
     val gameOver = stones.exists(_.doesCollide(this.preview)) || stones.headOption.exists(_.isOnTop)
 
@@ -47,6 +92,12 @@ class Board private (
     )
   }
 
+  /**
+   * Fuerza la aparición de una nueva pieza en el tablero.
+   *
+   * @param preview Nueva pieza para el preview
+   * @return Nuevo tablero con la nueva pieza activa
+   */
   def forceNewStone(preview: Stone): Board =
     new Board(size, this.preview.toTopCenter(topCenter) :: stones, preview, statistics, isGameRunning)
 

@@ -1,9 +1,12 @@
 package scalatetris.environment
 
 /**
- * Representa el tamaño del board. Implementado como case class para permitir la comparación entre tableros y sus tamaños.
+ * Clase que representa las dimensiones de un área rectangular.
  *
- * @param width  Ancho del board (cantidad de columnas)
- * @param height Alto del board (cantidad de filas)
+ * Esta clase se utiliza principalmente para definir el tamaño del tablero de juego
+ * y verificar los límites para el movimiento de las piezas.
+ *
+ * @param width Ancho del área en unidades
+ * @param height Alto del área en unidades
  */
 case class Size(width: Int, height: Int)

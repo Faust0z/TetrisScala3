@@ -1,0 +1,48 @@
+# ScalaTetris
+
+
+Este es un juego de Tetris implementado en Scala utilizando programación funcional y el patrón de actores.
+
+## Estructura del Proyecto
+
+El proyecto está organizado en los siguientes paquetes principales:
+
+- `scalatetris`: Contiene las clases principales del juego
+  - `Main`: Punto de entrada de la aplicación
+  - `Tetris`: Implementación del sistema de actores
+  - `AudioManager`: Gestión del audio del juego
+
+- `scalatetris.engine`: Lógica del juego
+  - `GameEngine`: Motor principal del juego
+  - `StoneFactory`: Fábrica de piezas de Tetris
+
+- `scalatetris.environment`: Elementos del juego
+  - `Board`: Tablero de juego
+  - `Stone`: Piezas del Tetris
+  - `Point`: Representación de puntos en el espacio
+  - `Size`: Dimensiones
+  - `Statistics`: Estadísticas del juego
+
+- `scalatetris.ui`: Interfaz gráfica
+  - `MainMenuPanel`: Panel del menú principal
+  - `TetrisPanel`: Panel del juego
+
+## Características Principales
+
+- Implementación funcional usando Scala 3
+- Sistema de actores con Akka
+- Interfaz gráfica con Scala Swing
+- Efectos visuales y sonoros
+- Sistema de puntuación y estadísticas
+- Controles personalizables
+- Modo pantalla completa
+
+## Cómo Jugar
+
+Use las siguientes teclas para jugar:
+- A/D: Mover izquierda/derecha
+- S: Acelerar caída
+- Q/E: Rotar pieza
+- P: Pausar
+- ESC: Volver al menú
+- F11: Pantalla completa
