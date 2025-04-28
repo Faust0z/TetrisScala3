@@ -1,6 +1,6 @@
 package scalatetris.engine
 
-import scalatetris.environment._
+import scalatetris.environment.{Board, Size, StoneFactory, Stone, Point, Statistics}
 import scalatetris.AudioManager
 import scala.util.Try
 
@@ -17,12 +17,12 @@ import scala.util.Try
  * @param boardSize Tamaño del tablero de juego
  * @param stoneFactory Fábrica que genera las piezas de Tetris
  */
-sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
+sealed class GameEngine(val boardSize: Size) {
   /** Estado actual del tablero */
   private var board: Board = new Board(
     boardSize,
-    stoneFactory.createRandomStone(),
-    stoneFactory.createRandomStone()
+    StoneFactory.createRandomStone(),
+    StoneFactory.createRandomStone()
   )
 
   /** Nivel actual del juego (0-29) */
@@ -65,7 +65,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
         }
       }
       
-      board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
+      board = board.update(List(Stone(points)), numberOfRemovedRows, StoneFactory.createRandomStone())
       holdUsedThisTurn = false  // Reset del hold para la nueva pieza
       
       if (!board.isGameRunning) {
@@ -244,7 +244,8 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       // Actualizar el tablero solo con las piezas fijas
       val remainingStones = board.stones.tail
       board = board.updateStones(remainingStones)
-      board = board.forceNewStone(stoneFactory.createRandomStone())
+
+      board = board.forceNewStone(StoneFactory.createRandomStone())
       holdUsedThisTurn = true
     }
     
@@ -271,8 +272,9 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   def restart(): Unit = {
     board = new Board(
       boardSize,
-      stoneFactory.createRandomStone(),
-      stoneFactory.createRandomStone()
+
+      StoneFactory.createRandomStone(),
+      StoneFactory.createRandomStone()
     )
     isRunning = true
     currentLevel = 0
