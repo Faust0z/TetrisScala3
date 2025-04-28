@@ -172,6 +172,13 @@ case class Stone(points: List[Point], stoneType: String = "Default") {
   def moveDown(): Stone = copy(points = points.map(_.moveDown()))
 
   /** 
+   * Mueve la pieza un espacio hacia arriba.
+   * 
+   * @return Nueva pieza con la posición actualizada
+   */
+  def moveUp(): Stone = copy(points = points.map(_.moveUp()))
+
+  /** 
    * Mueve la pieza un espacio hacia la izquierda.
    * 
    * @return Nueva pieza con la posición actualizada
@@ -200,18 +207,33 @@ case class Stone(points: List[Point], stoneType: String = "Default") {
   def rotateRight(): Stone = copy(points = points.map(_.rotateAroundCenterRight(findRotationCenter)))
   
   /** 
-   * Determina el centro de rotación según el tipo de pieza.
+   * Verifica si la pieza está dentro del marco del tablero.
    * 
-   * @return Punto que servirá como centro de rotación
+   * @param size Tamaño del tablero
+   * @return true si la pieza está completamente dentro del tablero
    */
-  private def findRotationCenter: Point = stoneType match {
-    case "T" => points(1)
-    case "L" => points(2)
-    case "J" => points(2)
-    case "Line" => points(1)
-    case "S" => points(2)
-    case "Z" => points(2)
-    case _ => points.head
+  def isInFrame(size: Size): Boolean = points.forall(p => 
+    p.x >= 0 && p.x < size.width && p.y >= 0 && p.y < size.height
+  )
+
+  /** 
+   * Verifica si esta pieza colisiona con otra.
+   * 
+   * @param other Otra pieza para verificar colisión
+   * @return true si hay al menos un punto en común entre las piezas
+   */
+  def doesCollide(other: Stone): Boolean = 
+    points.exists(p => other.points.contains(p))
+
+  /** 
+   * Resetea la posición de la pieza a su posición inicial.
+   * 
+   * @return Nueva pieza en su posición inicial
+   */
+  def resetPosition(): Stone = {
+    val minX = points.map(_.x).min
+    val minY = points.map(_.y).min
+    copy(points = points.map(p => Point(p.x - minX, p.y - minY)))
   }
 
   /** 
@@ -220,41 +242,13 @@ case class Stone(points: List[Point], stoneType: String = "Default") {
    * @param center Punto central superior del tablero
    * @return Nueva pieza centrada en la parte superior
    */
-  def toTopCenter(center: Point): Stone =
-    if (points.isEmpty) this
-    else {
-      val min = points.reduceLeft(_.min(_))
-      val stoneCenter = findRotationCenter
-      val xDiff = stoneCenter.x - center.x
-      copy(points = points.map(_ - Point(xDiff, min.y)))
-    }
-
-  /** 
-   * Resetea la posición de la pieza a sus coordenadas mínimas.
-   * 
-   * @return Nueva pieza con posición reseteada
-   */
-  def resetPosition(): Stone = {
-    val minX = points.map(_.x).min
-    val minY = points.map(_.y).min
-    copy(points = points.map(p => Point(p.x - minX, p.y - minY)))
+  def toTopCenter(center: Point): Stone = {
+    val resetStone = resetPosition()
+    val width = resetStone.points.map(_.x).max - resetStone.points.map(_.x).min + 1
+    val offsetX = center.x - width / 2
+    val offsetY = center.y
+    copy(points = resetStone.points.map(p => Point(p.x + offsetX, p.y + offsetY)))
   }
-  
-  /** 
-   * Verifica si esta pieza colisiona con otra.
-   * 
-   * @param other Pieza contra la que verificar colisión
-   * @return true si hay colisión, false en caso contrario
-   */
-  def doesCollide(other: Stone): Boolean = points.exists(a => other.points.contains(a))
-
-  /** 
-   * Verifica si la pieza está dentro del marco del tablero.
-   * 
-   * @param frame Tamaño del tablero
-   * @return true si la pieza está dentro del tablero, false en caso contrario
-   */
-  def isInFrame(frame: Size): Boolean = points.forall(_.isInFrame(frame))
 
   /** 
    * Verifica si algún punto de la pieza está en la fila superior.
@@ -262,4 +256,10 @@ case class Stone(points: List[Point], stoneType: String = "Default") {
    * @return true si la pieza toca la fila superior, false en caso contrario
    */
   def isOnTop: Boolean = points.exists(_.isOnTop)
+
+  private def findRotationCenter: Point = {
+    val xs = points.map(_.x)
+    val ys = points.map(_.y)
+    Point((xs.min + xs.max) / 2, (ys.min + ys.max) / 2)
+  }
 }

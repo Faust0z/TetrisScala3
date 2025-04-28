@@ -4,16 +4,16 @@ import scalatetris.environment.Statistics
 import scalatetris.environment.{Point, Stone}
 import scala.swing.TextArea
 
-/**
+/** 
  * Trait que define la interfaz para mostrar el estado del juego.
- *
+ * 
  * Esta interfaz permite diferentes implementaciones de visualización,
- * como modo texto, modo gráfico o incluso una versión sin salida visual.
+ * como modo texto, modo gráfico, o incluso una versión sin salida visual.
  */
 trait Display {
-  /**
+  /** 
    * Renderiza el estado actual del juego.
-   *
+   * 
    * @param stones Lista de piezas en el tablero
    * @param points Lista de puntos ocupados en el tablero
    * @param statistics Estadísticas actuales del juego
@@ -22,18 +22,18 @@ trait Display {
   def render(stones: List[Stone], points: List[Point], statistics: Statistics, isGameRunning: Boolean): Unit
 }
 
-/**
+/** 
  * Implementación de Display que muestra el juego en modo texto usando Swing.
- *
- * Esta implementación es útil para depuración o como una visualización alternativa
- * cuando el modo gráfico no está disponible.
- *
+ * 
+ * Esta implementación es útil para depuración o como visualización alternativa
+ * cuando no se dispone de modo gráfico.
+ * 
  * @param area Área de texto donde se mostrará el juego
  */
 class SwingDisplay(area: TextArea) extends Display {
-  /**
+  /** 
    * Renderiza el estado del juego en modo texto.
-   *
+   * 
    * Muestra una representación ASCII del tablero donde:
    * - 'x' representa un bloque ocupado
    * - ' ' representa un espacio vacío
@@ -62,11 +62,11 @@ class SwingDisplay(area: TextArea) extends Display {
   }
 }
 
-/**
+/** 
  * Implementación de Display que no realiza ninguna visualización.
- *
+ * 
  * Esta implementación se usa cuando la visualización se maneja externamente,
- * por ejemplo, cuando se utiliza TetrisPanel para el renderizado gráfico.
+ * por ejemplo, cuando se usa TetrisPanel para el renderizado gráfico.
  */
 class DummyDisplay extends Display {
   override def render(stones: List[Stone], points: List[Point], statistics: Statistics, isGameRunning: Boolean): Unit = {

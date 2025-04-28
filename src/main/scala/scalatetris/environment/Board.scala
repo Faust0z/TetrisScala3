@@ -2,9 +2,9 @@ package scalatetris.environment
 
 import java.util.Calendar
 
-/**
+/** 
  * Clase que representa el tablero de juego de Tetris.
- *
+ * 
  * Esta clase es inmutable y maneja:
  * - El estado actual del tablero
  * - Las piezas activas y fijas
@@ -19,9 +19,9 @@ class Board private (
                       val statistics: Statistics,
                       val isGameRunning: Boolean) {
 
-  /**
+  /** 
    * Constructor principal que inicializa un nuevo tablero.
-   *
+   * 
    * @param size Dimensiones del tablero
    * @param firstStone Primera pieza activa
    * @param firstPreview Primera pieza en preview
@@ -35,46 +35,46 @@ class Board private (
       isGameRunning = true
     )
 
-  /**
+  /** 
    * Calcula el punto central superior del tablero.
-   *
+   * 
    * @return Punto en el centro de la fila superior
    */
   private def topCenter: Point = Point(size.width / 2, 0)
 
-  /**
+  /** 
    * Obtiene todos los puntos ocupados en el tablero.
-   *
+   * 
    * @return Lista de puntos ocupados por todas las piezas
    */
   def points: List[Point] = stones.flatMap(_.points)
 
-  /**
+  /** 
    * Actualiza el estado del tablero con una nueva lista de piezas.
-   *
+   * 
    * @param stones Nueva lista de piezas
    * @return Nuevo tablero con las piezas actualizadas y estadísticas incrementadas
    */
   def update(stones: List[Stone]): Board =
     new Board(size, stones, preview, statistics.addTimePoints().applyPendingPoints(), isGameRunning)
 
-  /**
+  /** 
    * Actualiza directamente la lista de piezas sin modificar otros estados.
-   *
+   * 
    * @param stones Nueva lista de piezas
    * @return Nuevo tablero con las piezas actualizadas
    */
   def updateStones(stones: List[Stone]): Board =
     new Board(size, stones, preview, statistics, isGameRunning)
 
-  /**
+  /** 
    * Actualiza el tablero después de eliminar filas o insertar una nueva pieza.
-   *
+   * 
    * Este método:
    * - Coloca la pieza preview en el centro como nueva pieza activa
    * - Verifica si hay game over (colisión o pieza en fila superior)
    * - Actualiza las estadísticas según las filas eliminadas
-   *
+   * 
    * @param stones Lista de piezas fijas
    * @param numberOfRowsRemoved Número de filas que se eliminaron
    * @param preview Nueva pieza para el preview
@@ -92,9 +92,9 @@ class Board private (
     )
   }
 
-  /**
+  /** 
    * Fuerza la aparición de una nueva pieza en el tablero.
-   *
+   * 
    * @param preview Nueva pieza para el preview
    * @return Nuevo tablero con la nueva pieza activa
    */

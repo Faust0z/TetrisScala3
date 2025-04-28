@@ -1,6 +1,5 @@
 # ScalaTetris
 
-
 Este es un juego de Tetris implementado en Scala utilizando programación funcional y el patrón de actores.
 
 ## Estructura del Proyecto
@@ -45,4 +44,4 @@ Use las siguientes teclas para jugar:
 - Q/E: Rotar pieza
 - P: Pausar
 - ESC: Volver al menú
-- F11: Pantalla completa
+- F11: Pantalla completa 
