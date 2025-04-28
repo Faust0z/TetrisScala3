@@ -20,6 +20,9 @@ object Tetris {
   case object GameOver extends Command
   case object Hold extends Command
 
+  case object HardDrop extends Command
+
+
   def apply(engine: GameEngine, display: Display): Behavior[Command] =
     Behaviors.setup { _ =>
       var tickCounts = 0
@@ -76,6 +79,13 @@ object Tetris {
           AudioManager.pauseMusic()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
+
+        case HardDrop if engine.isGameRunning =>
+          while (engine.moveDown()) {} // Mover hacia abajo hasta que no pueda más
+          AudioManager.playSpeedSound() // Opcional: sonido de hard drop si querés
+          display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
+          Behaviors.same
+
 
         case Tick =>
           if (engine.isGameRunning) {

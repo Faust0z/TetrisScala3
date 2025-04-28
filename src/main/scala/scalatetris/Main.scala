@@ -120,6 +120,8 @@ object Main extends SimpleSwingApplication {
             case Key.P => tetris ! Tetris.Pause
             case Key.C => tetris ! Tetris.Continue
             case Key.H => tetris ! Tetris.Hold
+            case Key.Space => tetris ! Tetris.HardDrop
+
             case Key.M => // Tecla M para volver al menú
               tetris ! Tetris.Pause
               AudioManager.stopMusic()

@@ -14,7 +14,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   // Nivel actual del juego (0-29)
   private var currentLevel: Int = 0
-  
+
   // Pieza guardada/reservada (hold)
   private var holdStone: Option[Stone] = None
   private var holdUsedThisTurn: Boolean = false
@@ -25,40 +25,45 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
   // Timestamp de la última pausa para pausar el timer
   private var pauseStartTime: Option[Long] = None
   private var totalPausedTime: Long = 0
-
+  //Obtiene el tiempo de juego
+  private val gameStartTime: Long = System.currentTimeMillis()
 
   /*
   Intenta mover la pieza activa hacia abajo, sino puede moverse (colisión), fija la pieza y genera una nueva.
   si hay una fila completa la elimina con removeFullRows.
    */
-  def moveDown(): Unit = {
+  def moveDown(): Boolean = {
     // No permitas movimientos si el juego ya terminó
-    if (!board.isGameRunning) return
+    if (!board.isGameRunning) return false
 
-    if (!move(_.moveDown())) {
-      AudioManager.playCollisionSound()
-      val (points, numberOfRemovedRows) = removeFullRows(board.points)
-      
-      // Actualizar nivel según filas completadas
-      if (numberOfRemovedRows > 0) {
-        updateLevel(numberOfRemovedRows)
-        if (numberOfRemovedRows == 4) {
-          AudioManager.playFourLineSound()
-        } else {
-          AudioManager.playCompleteSound()
+      if (!move(_.moveDown())) {
+        AudioManager.playCollisionSound()
+        val (points, numberOfRemovedRows) = removeFullRows(board.points)
+
+        // Actualizar nivel según filas completadas
+        if (numberOfRemovedRows > 0) {
+          updateLevel(numberOfRemovedRows)
+          if (numberOfRemovedRows == 4) {
+            AudioManager.playFourLineSound()
+          } else {
+            AudioManager.playCompleteSound()
+          }
         }
+
+        board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
+        holdUsedThisTurn = false // Reset del hold para la nueva pieza
+
+        if (!board.isGameRunning) {
+          AudioManager.stopMusic()
+          AudioManager.playGameOverSound()
+        }
+        false // <-- No se pudo mover más
+      } else {
+        true // <-- Se movió exitosamente
       }
-      
-      board = board.update(List(Stone(points)), numberOfRemovedRows, stoneFactory.createRandomStone())
-      holdUsedThisTurn = false  // Reset del hold para la nueva pieza
-      
-      if (!board.isGameRunning) {
-        AudioManager.stopMusic()
-        AudioManager.playGameOverSound()
-      }
-    }
+
   }
-  
+
   // Actualizar el nivel basado en las líneas completadas
   private def updateLevel(rowsCleared: Int): Unit = {
     val totalRows = board.statistics.rowsCompleted + rowsCleared
@@ -67,23 +72,46 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       currentLevel = newLevel
     }
   }
-  
+
   // Obtiene el nivel actual
   def getLevel: Int = currentLevel
-  
+
+
   // Obtiene el factor de velocidad basado en el nivel actual
   def getSpeedFactor: Int = {
-    // Fórmula basada en la velocidad del NES Tetris con algunas modificaciones
-    if (currentLevel < 10) {
-      48 - currentLevel * 5  // Disminuye de 48 a 3 frames
+    // Obtiene el tiempo total jugado (en milisegundos) y lo convierte en minutos
+    val elapsedMinutes = obtenerTiempoDeJuego / 60000
+
+    // Aumenta la velocidad en que caen las fichas
+    val timeBasedSpeedBonus = (elapsedMinutes * 2).toInt
+
+    // Calcular la velocidad base solo según el nivel actual
+    val baseSpeed = if (currentLevel < 10) {
+      48 - currentLevel * 5 // Para niveles de 0 a 9: cada nivel baja 5 frames
     } else if (currentLevel < 20) {
-      28 - (currentLevel - 10) * 2  // Disminuye de 28 a 8 frames
+      28 - (currentLevel - 10) * 2 // Para niveles de 10 a 19: cada nivel baja 2 frames
     } else if (currentLevel < 29) {
-      8 - (currentLevel - 20) / 3  // Disminuye de 8 a 5 frames
+      8 - (currentLevel - 20) / 3 // Para niveles de 20 a 28: baja 1 frame cada 3 niveles
     } else {
-      1  // "Kill screen" - caída inmediata en nivel 29
+      1 // Nivel 29 o superior: caída casi instantánea (1 frame)
+    }
+
+    // Ajustar la velocidad base restando el bonus de tiempo jugado,
+    // asegurándose que nunca sea menor a 1 frame
+    math.max(baseSpeed - timeBasedSpeedBonus, 1)
+  }
+
+  // Devuelve el tiempo jugado en milisegundos, descontando las pausas
+  def obtenerTiempoDeJuego: Long = {
+    val now = System.currentTimeMillis()
+
+    if (!isRunning && pauseStartTime.isDefined) {
+      (pauseStartTime.get - gameStartTime) - totalPausedTime
+    } else {
+      (now - gameStartTime) - totalPausedTime
     }
   }
+
 
   //move() va a chequear si la nueva posición esta dentro del tablero y sin colisiones.
   private def move(action: Stone => Stone): Boolean = {
@@ -153,18 +181,18 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       AudioManager.playSpinSound()
     }
   }
-  
+
   // Hold/guardar pieza actual
   def holdCurrentStone(): Unit = {
     if (!board.isGameRunning || holdUsedThisTurn) return
-    
+
     val currentStone = board.stones.head
-    
+
     // Si ya hay una pieza en hold, intercambiar
     if (holdStone.isDefined) {
       val newCurrentStone = holdStone.get.toTopCenter(Point(board.size.width / 2, 0))
       holdStone = Some(currentStone.resetPosition())
-      
+
       // Actualizar el tablero con la nueva pieza actual
       if (!board.stones.tail.exists(_.doesCollide(newCurrentStone))) {
         // Crear una nueva lista de piedras sin la actual
@@ -182,11 +210,11 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       board = board.forceNewStone(stoneFactory.createRandomStone())
       holdUsedThisTurn = true
     }
-    
+
     // Reproducir un sonido cuando se guarda una pieza
     AudioManager.playSideSound()
   }
-  
+
   // Obtener la pieza guardada
   def getHoldStone: Option[Stone] = holdStone
 
@@ -218,7 +246,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
 
   def statistics: Statistics = {
     val now = System.currentTimeMillis()
-    
+
     if (!isRunning && pauseStartTime.isDefined) {
       // Si estamos en pausa y aún no hemos actualizado totalPausedTime para esta pausa
       val pauseDuration = now - pauseStartTime.get
@@ -242,12 +270,12 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     // Solo permite continuar si el tablero todavía está en juego
     if (!board.isGameRunning) return
 
-    if (!isRunning && pauseStartTime.isDefined) {
-      val now = System.currentTimeMillis()
-      totalPausedTime += now - pauseStartTime.get
-      pauseStartTime = None
-    }
-    
+      if (!isRunning && pauseStartTime.isDefined) {
+        val now = System.currentTimeMillis()
+        totalPausedTime += now - pauseStartTime.get
+        pauseStartTime = None
+      }
+
     isRunning = true
     AudioManager.resumeMusic()
     AudioManager.playResumeSound()
@@ -272,4 +300,5 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
           (pointsInRow ::: rows, numberOfRemovedRows)
         }
     }
+
 }
