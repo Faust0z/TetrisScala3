@@ -4,7 +4,7 @@ import java.util.Random
 
 /**
  * Objeto que genera piezas/Stones aleatoriamente.
- * Las piezas se crean en la posición inicial (0, 0) y pueden rotarse aleatoriamente hasta 2 veces.
+ * Las piezas se crean en la posición inicial (0,0) y pueden rotarse aleatoriamente hasta 2 veces.
  * Se crean en la posición (0, 0) debido a que las piezas tienen diferentes tamaños y luego se centran.
  */
 object RandomStoneFactory {
