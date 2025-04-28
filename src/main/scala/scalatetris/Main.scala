@@ -68,7 +68,7 @@ object Main extends SimpleSwingApplication {
       // Calcular el tamaño de bloque basado en la resolución de la pantalla
       val blockSize = math.min(screenSize.width / 30, screenSize.height / 30)
       
-      val engine = new GameEngine(Size(10, 20), RandomStoneFactory)
+      val engine = new GameEngine(Size(10, 20))
       val panel = new TetrisPanel(engine, blockSize)
       
       // Escuchar cambios de tamaño para reajustar el panel

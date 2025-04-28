@@ -1,7 +1,88 @@
 package scalatetris.environment
 
-object Stone {
-  def apply(start: Point): Stone = Stone(List(start))
+/**
+ * Define la clase para las las piedras/piezas. Todas estas son una lista de Puntos que tienen un nombre que las identifica,
+ * funcionalidades para moverlas, rotarlas y comprobar su posición en el board.
+ *
+ * @param points    Un parámetro de tipo Lista que guarda los puntos que componen a la pieza
+ * @param stoneType Un parámetro de tipo String que indican qué tipo de pieza es
+ */
+case class Stone(points: List[Point], stoneType: String = "Default") {
+  /**
+   * Mueve todos los puntos de la pieza hacia abajo y la devuelve.
+   */
+  def moveDown(): Stone = copy(points = points.map(_.moveDown()))
+
+  /**
+   * Mueve todos los puntos de la pieza hacia la izquierda y la devuelve.
+   */
+  def moveLeft(): Stone = copy(points = points.map(_.moveLeft()))
+
+  /**
+   * Mueve todos los puntos de la pieza hacia la derecha y la devuelve.
+   */
+  def moveRight(): Stone = copy(points = points.map(_.moveRight()))
+
+  /**
+   * Rota todos los puntos de la pieza hacia la izquierda y la devuelve.
+   */
+  def rotateLeft(): Stone = copy(points = points.map(_.rotateAroundCenterLeft(findRotationCenter)))
+
+  /**
+   * Rota todos los puntos de la pieza hacia la derecha y la devuelve.
+   */
+  def rotateRight(): Stone = copy(points = points.map(_.rotateAroundCenterRight(findRotationCenter)))
+
+  /**
+   * Devuelve el punto de rotación según la pieza que esté en juego.
+   */
+  private def findRotationCenter: Point = stoneType match {
+    //  Se podría incluir el centro de rotación directamente en la declaración de las Stones
+    case "T" => points(1)
+    case "L" => points(2)
+    case "J" => points(2)
+    case "Line" => points(1)
+    case "S" => points(2)
+    case "Z" => points(2)
+    case _ => points.head
+  }
+
+  /**
+   * Mueve la pieza en juego al centro y arriba del Board. Por defecto, las piezas comienzan en la esquina superior izquieda.
+   */
+  def toTopCenter(center: Point): Stone =
+    if (points.isEmpty) this
+    else {
+      val min = points.reduceLeft(_.min(_))
+      val stoneCenter = findRotationCenter
+      val xDiff = stoneCenter.x - center.x
+      copy(points = points.map(_ - Point(xDiff, min.y)))
+    }
+
+  /**
+   * Mueve la pieza en juego al centro y arriba del Board luego de mantener una ficha y soltarla.
+   */
+  def resetPosition(): Stone = {
+    val minX = points.map(_.x).min
+    val minY = points.map(_.y).min
+    copy(points = points.map(p => Point(p.x - minX, p.y - minY)))
+  }
+
+  /**
+   * Devuelve True si algún punto de la pieza contacta con otros puntos, lo que significa que colisionó.
+   */
+  def doesCollide(other: Stone): Boolean = points.exists(a => other.points.contains(a))
+
+  /**
+   * Devuelve True si todos los puntos de la pieza están dentro del board.
+   */
+  def isInFrame(frame: Size): Boolean = points.forall(_.isInFrame(frame))
+
+  /**
+   * Devuelve True si ninguno de los puntos de la pieza sobresalen por encima del tablero. Usado para comprobar si
+   * se terminó el juego.
+   */
+  def isOnTop: Boolean = points.exists(_.isOnTop)
 }
 
 object Square {
@@ -72,49 +153,4 @@ object StepRight {
       start.moveRight().moveDown(),
       start.moveRight().moveDown().moveRight()
     ), "Z")
-}
-
-case class Stone(points: List[Point], stoneType: String = "Default") {
-
-  def moveDown(): Stone = copy(points = points.map(_.moveDown()))
-
-  def moveLeft(): Stone = copy(points = points.map(_.moveLeft()))
-
-  def moveRight(): Stone = copy(points = points.map(_.moveRight()))
-
-  def rotateLeft(): Stone = copy(points = points.map(_.rotateAroundCenterLeft(findRotationCenter)))
-
-  def rotateRight(): Stone = copy(points = points.map(_.rotateAroundCenterRight(findRotationCenter)))
-  
-  //  Se podría incluir el centro de rotación directamente en la declaración de las Stones
-  private def findRotationCenter: Point = stoneType match {
-    case "T" => points(1)
-    case "L" => points(2)
-    case "J" => points(2)
-    case "Line" => points(1)
-    case "S" => points(2)
-    case "Z" => points(2)
-    case _ => points.head
-  }
-
-  def toTopCenter(center: Point): Stone =
-    if (points.isEmpty) this
-    else {
-      val min = points.reduceLeft(_.min(_))
-      val stoneCenter = findRotationCenter
-      val xDiff = stoneCenter.x - center.x
-      copy(points = points.map(_ - Point(xDiff, min.y)))
-    }
-
-  def resetPosition(): Stone = {
-    val minX = points.map(_.x).min
-    val minY = points.map(_.y).min
-    copy(points = points.map(p => Point(p.x - minX, p.y - minY)))
-  }
-  
-  def doesCollide(other: Stone): Boolean = points.exists(a => other.points.contains(a))
-
-  def isInFrame(frame: Size): Boolean = points.forall(_.isInFrame(frame))
-
-  def isOnTop: Boolean = points.exists(_.isOnTop)
 }
