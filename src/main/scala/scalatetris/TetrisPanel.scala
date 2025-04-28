@@ -7,6 +7,9 @@ import scala.swing._
 import java.awt.{Color, Graphics2D, GradientPaint, BasicStroke, GraphicsDevice, GraphicsEnvironment}
 
 /** 
+ * AVISO: Debido a cómo funciona ScalaDocs, no podemos excluir los métodos herados de ScalaSwing, por lo que se 
+ * recomienda activar el filtro "NoInherited" para solo ver los métodos creados.
+ * 
  * Panel que implementa la interfaz gráfica del juego Tetris.
  * 
  * Este panel maneja:
@@ -456,7 +459,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, titleFontSize))
     val fmMain = g.getFontMetrics
     val mainMsgWidth = fmMain.stringWidth(mainMessage)
-    val mainMsgHeight = fmMain.getHeight()
+    val mainMsgHeight = fmMain.getHeight
     
     // Dibujar el texto principal con efecto retro
     val xMain = (size.width - mainMsgWidth) / 2
@@ -501,7 +504,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     
     // Posicionar debajo de la puntuación
     val xRestart = (size.width - restartMsgWidth) / 2
-    val yRestart = yHighScore + (scoreFontSize * 2).toInt
+    val yRestart = yHighScore + (scoreFontSize * 2)
     
     g.setColor(Color.WHITE)
     g.drawString(restartMessage, xRestart, yRestart)
