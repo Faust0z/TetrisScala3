@@ -34,6 +34,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
   /** 
    * Mapa de colores para las diferentes piezas.
    * Cada pieza tiene un color principal y un color de sombra.
+   * Por ejemplo la pieza L tiene color naranja neón.
    */
   private val stoneColors: Map[String, (Color, Color)] = Map(
     "Square" -> (new Color(255, 255, 0), new Color(200, 200, 0)),    // Amarillo neón
@@ -46,6 +47,12 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     "Default" -> (Color.GRAY, Color.DARK_GRAY)
   )
 
+  /** Colores del tema como:
+   *  -Color de fondo, azul muy oscuro.
+   *  -Color de la grilla, azul grisáceo.
+   *  -Color de los bordes, azul brillante.
+   *  -Color de la pieza fantasma, se le dio una tonalidad semi-transparente.
+   */
   // Colores del tema
   private val backgroundColor = new Color(0, 0, 30)  // Azul muy oscuro
   private val gridColor = new Color(40, 40, 80)      // Azul grisáceo para la grilla
@@ -75,6 +82,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja todos los componentes del juego.
+   * Dibuja el tablero, el fondo,la grilla, bordes, pieza fantasma, las piezas, cuando se pausa, las estadisticas, la siguiente pieza, la pieza que se guarda y el game over al finalizar.
    * 
    * @param g Contexto gráfico donde dibujar
    */
@@ -110,6 +118,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Calcula la posición final de la pieza actual si cayera instantáneamente.
+   * Esta función permite hacer los calculos del efecto fantasma, para ver donde caera la pieza que actualmente esta en juego.
    * 
    * @param currentStone Pieza actual
    * @return Nueva pieza en su posición final
@@ -130,7 +139,8 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja la proyección fantasma de la pieza actual.
-   * 
+   * Esta función permite visualizar el efecto fantasma previamente calculado.
+   *
    * @param stone Pieza a dibujar como fantasma
    * @param g Contexto gráfico donde dibujar
    */
@@ -157,7 +167,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
   }
 
   /** 
-   * Dibuja la grilla del tablero de juego.
+   * Dibuja la grilla del tablero de juego con los limites previamente establecido para que no sobresalga del fondo.
    * 
    * @param g Contexto gráfico donde dibujar
    */
@@ -172,7 +182,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
   }
 
   /** 
-   * Dibuja el borde del tablero de juego.
+   * Dibuja el borde del tablero de juego por los limites previamente establecidos.
    * 
    * @param g Contexto gráfico donde dibujar
    */
@@ -189,7 +199,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
   }
 
   /** 
-   * Dibuja todas las piezas en el tablero.
+   * Dibuja todas las piezas en el tablero que estan guardadas en la lista de piezas del engine el cual ya fueron colocadas en el tablero.
    * 
    * @param g Contexto gráfico donde dibujar
    */
@@ -203,7 +213,8 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja un bloque individual con efectos visuales.
-   * 
+   * Esta función permite rellenar el bloque del color indicado previamente en "stoneColors", con su respectiva sombra y brillo.
+   *
    * @param g Contexto gráfico donde dibujar
    * @param x Coordenada X del bloque
    * @param y Coordenada Y del bloque
@@ -230,7 +241,10 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja el panel de estadísticas.
-   * 
+   * Esta compuesto por un titulo y un recuadro donde van a estar todas las estadisticas importantes que se guardan en enviroment --> Statistics.
+   * Las estadisticas a mostrar son el nivel, las filas completadas denominadas simplemente filas, el tiempo transcurrido y los puntos obtenidos que fueron calculadas según el tiempo transcurrido y las filas completadas.
+   * Cada una de estas estadistica va a ser una linea del panel de estadisticas y estará renderizada con la función "drawStatLine" definicas dentro de esta función.
+   *
    * @param g Contexto gráfico donde dibujar
    */
   private def drawStatisticsPanel(g: Graphics2D): Unit = {
@@ -269,6 +283,13 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, fontSize))
     statY += (10 * scaleFactor).toInt // Ajuste después del título
 
+    /**
+     * Dibuja cada linea del recuadro del panel de estadísticas.
+     * Cada una de estas estadistica va a ser una linea del panel de estadisticas y estará renderizada por esta función.
+     * En esta función se indica como va a ser el estilo de cada estadistica, con los colores, sombra y tipografía.
+     *
+     * @param g Contexto gráfico donde dibujar
+     */
     def drawStatLine(label: String, value: String): Unit = {
       // Sombra
       g.setColor(new Color(0, 0, 0))
@@ -303,7 +324,9 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja el panel de preview de la siguiente pieza.
-   * 
+   * En esta función se muestra en cuadro la siguiente pieza que se va a crear para darle al jugador mas información para su estrategia.
+   * Este panel cuenta con la estetica del titulo, el recuadro donde va a ser mostrada la pieza, la renderización de la pieza de manera centrada y demás detalles esteticos.
+   *
    * @param g Contexto gráfico donde dibujar
    */
   private def drawPreviewPanel(g: Graphics2D): Unit = {
@@ -356,6 +379,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja un bloque en el panel de preview.
+   * Esta función permite pintar el color de la pieza que se encuentra en el cuadro de siguiente pieza.
    * 
    * @param g Contexto gráfico donde dibujar
    * @param x Coordenada X del bloque
@@ -381,6 +405,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja el recordatorio de pausa.
+   * En esta función se mostrara por debajo del tablero de juego indicando que con la tecla "P" podra poner en pausa el juego y ver los controles.
    * 
    * @param g Contexto gráfico donde dibujar
    */
@@ -407,7 +432,10 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja la pantalla de game over.
-   * 
+   * La pantalla del game over aparece cuando el jugador pierde, esta le permite ver la puntuación que realizo en esta partida y el record de la sesión, ya que sino se cierra el juego y comienza con la "R" una nueva partida puede recordad el mayor puntaje de todas las partidas que jugo en la misma sesión sin cerrar el juego.
+   * Muestra el mensaje de game over, la tecla con la cual se reinicia para volver a jugar, el puntaje que hizo y el puntaje máximo.
+   * Tambien se declara el estilo completo de la información dicha anteriormente, ya sea colores, tipografía y posicionamiento de los elementos.
+   *
    * @param g Contexto gráfico donde dibujar
    */
   private def drawGameOver(g: Graphics2D): Unit = {
@@ -498,7 +526,9 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja la pantalla de controles.
-   * 
+   * Esta función nos permite mostrar los controles una vez que se pausa el juego, así el jugador puede tener a su disposicion toda la información necesaria para jugar correctamente.
+   * En esta función esta el estilo completo de la lista de controles para poder ser renderizada correctamente con una linea estetica.
+   *
    * @param g Contexto gráfico donde dibujar
    */
   private def drawControls(g: Graphics2D): Unit = {
@@ -511,6 +541,12 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     val spacing = (40 * scaleFactor).toInt
     val fontSize = (16 * scaleFactor).toInt
 
+    /**
+     * Define cada linea de la lista de controles.
+     * Esta función contiene el estilo de cada linea de la lista de controles que se va a mostrar.
+     *
+     * @param g Contexto gráfico donde dibujar
+     */
     def drawControlLine(key: String, action: String, y: Int): Unit = {
       // Dibujar el fondo del botón para la tecla
       g.setColor(new Color(40, 40, 40))
@@ -570,7 +606,9 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja la pantalla de pausa.
-   * 
+   * Esta función permite dibujar la pantalla de pausa la cual tiene un titulo superior de pausa y también muestra la lista de controles.
+   * Contiene el estilo completo de todos los elementos que compone a la pantalla de pausa.
+   *
    * @param g Contexto gráfico donde dibujar
    */
   private def drawPaused(g: Graphics2D): Unit = {
@@ -602,7 +640,10 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   /** 
    * Dibuja el panel de hold (pieza guardada).
-   * 
+   *
+   * Esta función permite mostrar en pantalla la pieza que fue guardada por el juegador a la espera de ser invocada nuevamente cuando el jugador la requiera.
+   * Contiene los estilos completos de cada elemento que aparece en el holdPanel.
+   *
    * @param g Contexto gráfico donde dibujar
    */
   private def drawHoldPanel(g: Graphics2D): Unit = {
