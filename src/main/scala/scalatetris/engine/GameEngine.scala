@@ -1,6 +1,6 @@
 package scalatetris.engine
 
-import scalatetris.environment.{Board, Size, RandomStoneFactory, Stone, Point, Statistics}
+import scalatetris.environment.{Board, Size, StoneFactory, Stone, Point, Statistics}
 import scalatetris.AudioManager
 import scala.util.Try
 
@@ -8,8 +8,8 @@ import scala.util.Try
 sealed class GameEngine(val boardSize: Size) {
   private var board: Board = new Board(
     boardSize,
-    RandomStoneFactory.createRandomStone(),
-    RandomStoneFactory.createRandomStone()
+    StoneFactory.createRandomStone(),
+    StoneFactory.createRandomStone()
   )
 
   // Nivel actual del juego (0-29)
@@ -49,7 +49,7 @@ sealed class GameEngine(val boardSize: Size) {
         }
       }
       
-      board = board.update(List(Stone(points)), numberOfRemovedRows, RandomStoneFactory.createRandomStone())
+      board = board.update(List(Stone(points)), numberOfRemovedRows, StoneFactory.createRandomStone())
       holdUsedThisTurn = false  // Reset del hold para la nueva pieza
       
       if (!board.isGameRunning) {
@@ -179,7 +179,7 @@ sealed class GameEngine(val boardSize: Size) {
       // Actualizar el tablero solo con las piezas fijas
       val remainingStones = board.stones.tail
       board = board.updateStones(remainingStones)
-      board = board.forceNewStone(RandomStoneFactory.createRandomStone())
+      board = board.forceNewStone(StoneFactory.createRandomStone())
       holdUsedThisTurn = true
     }
     
@@ -194,8 +194,8 @@ sealed class GameEngine(val boardSize: Size) {
   def restart(): Unit = {
     board = new Board(
       boardSize,
-      RandomStoneFactory.createRandomStone(),
-      RandomStoneFactory.createRandomStone()
+      StoneFactory.createRandomStone(),
+      StoneFactory.createRandomStone()
     )
     isRunning = true
     currentLevel = 0

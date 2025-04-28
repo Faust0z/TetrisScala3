@@ -7,7 +7,7 @@ import java.util.Random
  * Las piezas se crean en la posición inicial (0,0) y pueden rotarse aleatoriamente hasta 2 veces.
  * Se crean en la posición (0, 0) debido a que las piezas tienen diferentes tamaños y luego se centran.
  */
-object RandomStoneFactory {
+object StoneFactory {
   private val random: Random = new Random()
   private val start: Point = Point(0, 0)
 
