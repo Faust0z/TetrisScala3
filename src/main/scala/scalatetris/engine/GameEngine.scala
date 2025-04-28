@@ -83,7 +83,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     val elapsedMinutes = obtenerTiempoDeJuego / 60000
 
     // Aumenta la velocidad en que caen las fichas
-    val timeBasedSpeedBonus = (elapsedMinutes * 2).toInt
+    val timeBasedSpeedBonus = (elapsedMinutes * 8).toInt
 
     // Calcular la velocidad base solo según el nivel actual
     val baseSpeed = if (currentLevel < 10) {

@@ -89,11 +89,12 @@ object Tetris {
 
         case Tick =>
           if (engine.isGameRunning) {
-            tickCounts += 6 // Bajan 1 bloque por segundo, ajustar según dificultad base
+            tickCounts += 8 // Bajan 1 bloque por segundo, ajustar según dificultad base
             val speedFactor = math.max(engine.getSpeedFactor, 1)
 
-            if (tickCounts % speedFactor == 0) {
+            if (tickCounts >= speedFactor) {
               engine.moveDown()
+              tickCounts = 0
             }
           }
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
