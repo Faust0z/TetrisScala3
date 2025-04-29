@@ -254,7 +254,6 @@ object Main extends SimpleSwingApplication {
   def updateHighScore(score: Int): Unit = {
     if (score > highScore) {
       highScore = score
-      // Aquí podrías implementar la persistencia para guardar el récord en disco
     }
   }
   
