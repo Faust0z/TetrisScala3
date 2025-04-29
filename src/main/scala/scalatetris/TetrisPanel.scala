@@ -6,16 +6,38 @@ import scalatetris.environment._
 import scala.swing._
 import java.awt.{Color, Graphics2D, GradientPaint, BasicStroke, GraphicsDevice, GraphicsEnvironment}
 
+/** 
+ * AVISO: Debido a cómo funciona ScalaDocs, no podemos excluir los métodos herados de ScalaSwing, por lo que se 
+ * recomienda activar el filtro "NoInherited" para solo ver los métodos creados.
+ * 
+ * Panel que implementa la interfaz gráfica del juego Tetris.
+ * 
+ * Este panel maneja:
+ * - El renderizado del tablero de juego
+ * - La visualización de piezas y efectos
+ * - Los paneles de información (estadísticas, siguiente pieza, hold)
+ * - Los estados especiales (pausa, game over)
+ * - Efectos visuales y animaciones
+ * 
+ * @param engine Motor del juego que proporciona la lógica
+ * @param initialBlockSize Tamaño inicial de cada bloque en píxeles
+ */
 class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel {
   preferredSize = new Dimension(640, 768)
   focusable = true
   requestFocus()
 
+  /** Tamaño actual de cada bloque en píxeles */
   private var blockSize = initialBlockSize
+  /** Desplazamiento horizontal del tablero */
   private var offsetX = 50
+  /** Desplazamiento vertical del tablero */
   private var offsetY = 50
 
-  // Colores retro para las piezas con efecto neón
+  /** 
+   * Mapa de colores para las diferentes piezas.
+   * Cada pieza tiene un color principal y un color de sombra.
+   */
   private val stoneColors: Map[String, (Color, Color)] = Map(
     "Square" -> (new Color(255, 255, 0), new Color(200, 200, 0)),    // Amarillo neón
     "Line" -> (new Color(0, 255, 255), new Color(0, 200, 200)),      // Cyan neón
@@ -80,7 +102,12 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     }
   }
 
-  // Calcular la posición de la pieza fantasma (proyección)
+  /** 
+   * Calcula la posición final de la pieza actual si cayera instantáneamente.
+   * 
+   * @param currentStone Pieza actual
+   * @return Nueva pieza en su posición final
+   */
   private def calculateGhostPiece(currentStone: Stone): Stone = {
     var ghostStone = currentStone
     var testStone = ghostStone.moveDown()
@@ -95,7 +122,12 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     ghostStone
   }
 
-  // Dibujar la pieza fantasma
+  /** 
+   * Dibuja la proyección fantasma de la pieza actual.
+   * 
+   * @param stone Pieza a dibujar como fantasma
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawGhostPiece(g: Graphics2D, stone: Stone): Unit = {
     g.setColor(ghostColor)
     stone.points.foreach { p =>
@@ -230,6 +262,11 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     drawStatLine("PUNTOS", scoreText)
   }
 
+  /** 
+   * Dibuja el panel de vista previa de la siguiente pieza.
+   * 
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawPreviewPanel(g: Graphics2D): Unit = {
     val previewStone = engine.nextStone
     val (mainColor, shadowColor) = stoneColors.getOrElse(previewStone.stoneType, (Color.GRAY, Color.DARK_GRAY))
@@ -278,6 +315,16 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     }
   }
 
+  /** 
+   * Dibuja un bloque en el panel de vista previa.
+   * 
+   * @param g Contexto gráfico donde dibujar
+   * @param x Coordenada X del bloque
+   * @param y Coordenada Y del bloque
+   * @param size Tamaño del bloque
+   * @param mainColor Color principal del bloque
+   * @param shadowColor Color de sombra del bloque
+   */
   private def fillPreviewBlock(g: Graphics2D, x: Float, y: Float, size: Int, mainColor: Color, shadowColor: Color): Unit = {
     // Sombra interior
     g.setColor(shadowColor)
@@ -293,6 +340,11 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     g.fillRect(x.toInt + 2, y.toInt + 2, 2, size - 6)
   }
 
+  /** 
+   * Dibuja el recordatorio de pausa.
+   * 
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawPauseReminder(g: Graphics2D): Unit = {
     if (engine.isGameRunning) {
       val reminderText = "Pausa/Controles: 'P'"
@@ -314,6 +366,11 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     }
   }
 
+  /** 
+   * Dibuja la pantalla de game over.
+   * 
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawGameOver(g: Graphics2D): Unit = {
     val mainMessage = "GAME OVER"
     val scoreMessage = s"PUNTUACIÓN: ${engine.statistics.score}"
@@ -332,7 +389,7 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, titleFontSize))
     val fmMain = g.getFontMetrics
     val mainMsgWidth = fmMain.stringWidth(mainMessage)
-    val mainMsgHeight = fmMain.getHeight()
+    val mainMsgHeight = fmMain.getHeight
     
     // Dibujar el texto principal con efecto retro
     val xMain = (size.width - mainMsgWidth) / 2
@@ -377,12 +434,18 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     
     // Posicionar debajo de la puntuación
     val xRestart = (size.width - restartMsgWidth) / 2
-    val yRestart = yHighScore + (scoreFontSize * 2).toInt
+    val yRestart = yHighScore + (scoreFontSize * 2)
     
     g.setColor(Color.WHITE)
     g.drawString(restartMessage, xRestart, yRestart)
   }
 
+  /** 
+   * Obtiene el color correspondiente a una pieza.
+   * 
+   * @param stone Pieza de la que obtener el color
+   * @return Color asignado a la pieza
+   */
   private def colorOf(stone: Stone): Color = stone.stoneType match {
     case "Square" => Color.YELLOW
     case "Line" => Color.CYAN
@@ -394,6 +457,11 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     case _ => Color.GRAY // Para el tipo "Default" o cualquier otro
   }
 
+  /** 
+   * Dibuja la pantalla de controles.
+   * 
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawControls(g: Graphics2D): Unit = {
     val controlsX = (size.width - 300) / 2  // Centrado en la pantalla
     var controlsY = (size.height - 400) / 2  // Comenzar más arriba en la pantalla
@@ -461,6 +529,11 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     drawControlLine("F11", "Pantalla completa", controlsY + spacing * 11)
   }
 
+  /** 
+   * Dibuja la pantalla de pausa.
+   * 
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawPaused(g: Graphics2D): Unit = {
     val message = "PAUSA"
     
@@ -488,7 +561,11 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     drawControls(g)
   }
 
-  // Dibujar panel de pieza guardada (hold)
+  /** 
+   * Dibuja el panel de pieza guardada (hold).
+   * 
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawHoldPanel(g: Graphics2D): Unit = {
     val holdStone = engine.getHoldStone
     
