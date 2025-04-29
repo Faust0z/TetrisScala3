@@ -8,8 +8,7 @@ package scalatetris
  */
 object UserInteraction extends Enumeration {
   type UserInteraction = Value
-  /** Eventos posibles de interacción del usuario */
-  val Left, Right, Down, RotateLeft, RotateRight, Restart, Pause, Continue = Value
+  val Left, Right, Down, RotateLeft, RotateRight, Restart, Pause, Continue  = Value
 }
 
 /** 
