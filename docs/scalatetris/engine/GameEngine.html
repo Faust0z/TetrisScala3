@@ -1,0 +1,1082 @@
+<!DOCTYPE html><html data-pathToRoot="../../"><head><meta charset="utf-8"></meta><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"></meta><title>GameEngine</title><link rel="shortcut icon" type="image/x-icon" href="../../favicon.ico"></link><script type="text/javascript" src="../../scripts/theme.js"></script><script type="text/javascript" src="../../scripts/searchData.js" defer="true"></script><script type="text/javascript" src="../../scripts/scastieConfiguration.js" defer="true"></script><link rel="stylesheet" href="../../styles/theme/bundle.css"></link><link rel="stylesheet" href="../../styles/theme/components/bundle.css"></link><link rel="stylesheet" href="../../styles/theme/components/button/bundle.css"></link><link rel="stylesheet" href="../../styles/theme/layout/bundle.css"></link><link rel="stylesheet" href="../../styles/nord-light.css"></link><link rel="stylesheet" href="../../styles/dotty-icons.css"></link><link rel="stylesheet" href="../../styles/filter-bar.css"></link><link rel="stylesheet" href="../../styles/code-snippets.css"></link><link rel="stylesheet" href="../../styles/searchbar.css"></link><link rel="stylesheet" href="../../styles/social-links.css"></link><link rel="stylesheet" href="../../styles/versions-dropdown.css"></link><link rel="stylesheet" href="../../styles/content-contributors.css"></link><link rel="stylesheet" href="../../styles/fontawesome.css"></link><script type="text/javascript" src="../../hljs/highlight.pack.js" defer="true"></script><script type="text/javascript" src="../../scripts/hljs-scala3.js" defer="true"></script><script type="text/javascript" src="../../scripts/ux.js" defer="true"></script><script type="text/javascript" src="../../scripts/common/component.js" defer="true"></script><script type="text/javascript" src="../../scripts/common/utils.js" defer="true"></script><script type="text/javascript" src="../../scripts/components/FilterBar.js" defer="true"></script><script type="text/javascript" src="../../scripts/components/DocumentableList.js" defer="true"></script><script type="text/javascript" src="../../scripts/components/Input.js" defer="true"></script><script type="text/javascript" src="../../scripts/components/FilterGroup.js" defer="true"></script><script type="text/javascript" src="../../scripts/components/Filter.js" defer="true"></script><script type="text/javascript" src="../../scripts/scaladoc-scalajs.js" defer="true"></script><script type="text/javascript" src="../../scripts/contributors.js" defer="true"></script><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js" defer="true"></script><script type="text/javascript" src="https://d3js.org/d3.v6.min.js" defer="true"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/graphlib-dot@0.6.2/dist/graphlib-dot.min.js" defer="true"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dagre-d3/0.6.1/dagre-d3.min.js" defer="true"></script><script type="text/javascript" src="https://scastie.scala-lang.org/embedded.js" defer="true"></script><script type="text/javascript" src="../../scripts/data.js" defer="true"></script><link rel="stylesheet" href="../../styles/apistyles.css"></link><script>var pathToRoot = "../../";</script></head><body><div id=""><div id="header" class="body-small"><div class="header-container-left"><a href="../../" class="logo-container"><span class="project-name h300">ScalaTetris Documentation</span></a><span onclick="dropdownHandler(event)" class="text-button with-arrow" id="dropdown-trigger"><a><div class="projectVersion">0.1</div></a></span><div id="version-dropdown" class="dropdown-menu"></div></div><div class="header-container-right"><button id="search-toggle" class="icon-button"></button><span id="theme-toggle" class="icon-button"></span><span id="mobile-menu-toggle" class="icon-button hamburger"></span></div></div><div id="mobile-menu"><div class="mobile-menu-header body-small"><span class="mobile-menu-logo"><span class="project-name h300">ScalaTetris Documentation</span></span><button id="mobile-menu-close" class="icon-button close"></button></div><div class="mobile-menu-container body-medium"><input id="mobile-scaladoc-searchbar-input" class="scaladoc-searchbar-input" type="search" placeholder="Find anything"></input><span id="mobile-theme-toggle" class="mobile-menu-item mode"></span></div></div><span id="mobile-sidebar-toggle" class="floating-button"></span><div id="leftColumn" class="body-small"><div class="switcher-container"><a id="api-nav-button" class="switcher h100 selected" href="../../index.html">API</a></div><nav id="api-nav" class="side-menu"><div class="ni n0 expanded"><span class="nh h100 expanded cs"><button class="ar icon-button expanded"></button><a href="../../scalatetris.html"><span class="micon pa"></span><span>scalatetris</span></a></span><div class="ni n1 expanded"><span class="nh h100 expanded cs"><button class="ar icon-button expanded"></button><a href="../engine.html"><span class="micon pa"></span><span>engine</span></a></span><div class="ni n2 expanded"><span class="nh h100 selected"><a href="#"><span class="micon cl"></span><span>GameEngine</span></a></span></div></div><div class="ni n1"><span class="nh "><button class="ar icon-button "></button><a href="../environment.html"><span class="micon pa"></span><span>environment</span></a></span><div class="ni n2 "><span class="nh "><a href="../environment/Board.html"><span class="micon cl"></span><span>Board</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/LetterLLeft$.html"><span class="micon ob"></span><span>LetterLLeft</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/LetterLRight$.html"><span class="micon ob"></span><span>LetterLRight</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/Line$.html"><span class="micon ob"></span><span>Line</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/Point.html"><span class="micon cl"></span><span>Point</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/Size.html"><span class="micon cl"></span><span>Size</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/Square$.html"><span class="micon ob"></span><span>Square</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/Statistics.html"><span class="micon cl"></span><span>Statistics</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/StepLeft$.html"><span class="micon ob"></span><span>StepLeft</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/StepRight$.html"><span class="micon ob"></span><span>StepRight</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/Stone$.html"><span class="micon ob"></span><span>Stone</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/Stone.html"><span class="micon cl"></span><span>Stone</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/StoneFactory$.html"><span class="micon ob"></span><span>StoneFactory</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../environment/WinnerPodium$.html"><span class="micon ob"></span><span>WinnerPodium</span></a></span></div></div><div class="ni n1"><span class="nh "><button class="ar icon-button "></button><a href="../ui.html"><span class="micon pa"></span><span>ui</span></a></span><div class="ni n2"><span class="nh "><button class="ar icon-button "></button><a href="../ui/MainMenuPanel.html"><span class="micon cl"></span><span>MainMenuPanel</span></a></span><div class="ni n3 "><span class="nh "><a href="../ui/MainMenuPanel$MenuButton.html"><span class="micon cl"></span><span>MenuButton</span></a></span></div></div></div><div class="ni n1 "><span class="nh "><a href="../AudioManager$.html"><span class="micon ob"></span><span>AudioManager</span></a></span></div><div class="ni n1 "><span class="nh "><a href="../Display.html"><span class="micon tr"></span><span>Display</span></a></span></div><div class="ni n1 "><span class="nh "><a href="../DummyDisplay.html"><span class="micon cl"></span><span>DummyDisplay</span></a></span></div><div class="ni n1 "><span class="nh "><a href="../EngineEvent$.html"><span class="micon ob"></span><span>EngineEvent</span></a></span></div><div class="ni n1"><span class="nh "><button class="ar icon-button "></button><a href="../Main$.html"><span class="micon ob"></span><span>Main</span></a></span><div class="ni n2 "><span class="nh "><a href="../Main$$GameState.html"><span class="micon tr"></span><span>GameState</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Main$$MenuState$.html"><span class="micon ob"></span><span>MenuState</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Main$$PlayingState$.html"><span class="micon ob"></span><span>PlayingState</span></a></span></div></div><div class="ni n1 "><span class="nh "><a href="../SwingDisplay.html"><span class="micon cl"></span><span>SwingDisplay</span></a></span></div><div class="ni n1"><span class="nh "><button class="ar icon-button "></button><a href="../Tetris$.html"><span class="micon ob"></span><span>Tetris</span></a></span><div class="ni n2 "><span class="nh "><a href="../Tetris$$Command.html"><span class="micon tr"></span><span>Command</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$Continue$.html"><span class="micon ob"></span><span>Continue</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$Down$.html"><span class="micon ob"></span><span>Down</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$GameOver$.html"><span class="micon ob"></span><span>GameOver</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$Hold$.html"><span class="micon ob"></span><span>Hold</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$Left$.html"><span class="micon ob"></span><span>Left</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$Pause$.html"><span class="micon ob"></span><span>Pause</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$Restart$.html"><span class="micon ob"></span><span>Restart</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$Right$.html"><span class="micon ob"></span><span>Right</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$RotateLeft$.html"><span class="micon ob"></span><span>RotateLeft</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$RotateRight$.html"><span class="micon ob"></span><span>RotateRight</span></a></span></div><div class="ni n2 "><span class="nh "><a href="../Tetris$$Tick$.html"><span class="micon ob"></span><span>Tick</span></a></span></div></div><div class="ni n1 "><span class="nh "><a href="../TetrisPanel.html"><span class="micon cl"></span><span>TetrisPanel</span></a></span></div><div class="ni n1 "><span class="nh "><a href="../UserInteraction$.html"><span class="micon ob"></span><span>UserInteraction</span></a></span></div></div></nav></div><div id="footer" class="body-small"><div class="left-container">Generated with</div><div class="right-container"><div class="text"></div></div><div class="text-mobile"></div></div><div id="scaladoc-searchBar"></div><div id="main"><div class="breadcrumbs container"><a href="../../index.html">ScalaTetris Documentation</a>/<a href="../../scalatetris.html">scalatetris</a>/<a href="../engine.html">scalatetris.engine</a>/<a href="GameEngine.html">GameEngine</a></div><div id="content" class="body-medium"><div><div class="cover-header">
+ <span class="icon"><span class="micon cl"></span></span>
+ <h1 class="h600 single">GameEngine</h1>
+</div>
+<div class="fqname body-large">
+ <span>scalatetris.engine.GameEngine</span>
+</div>
+<div class="main-signature mono-small-block">
+ <div class="signature">
+  <span class="modifiers"><span t="k">sealed </span></span><span class="kind"><span t="k">class </span></span><a href="GameEngine.html" t="n" class="documentableName ">GameEngine</a>(<span t="k"></span><span t="k">val </span><span data-unresolved-link="" t="n">boardSize</span>: <a href="../environment/Size.html" t="t">Size</a>)
+ </div>
+</div>
+<div class="cover">
+ <div class="doc">
+  <p>Motor principal del juego Tetris que maneja toda la lógica del juego.</p> 
+  <p>Esta clase es responsable de:</p> 
+  <ul> 
+   <li>Gestionar el estado del tablero</li> 
+   <li>Controlar el movimiento de las piezas</li> 
+   <li>Manejar las colisiones</li> 
+   <li>Gestionar el sistema de niveles y dificultad</li> 
+   <li>Mantener el historial de movimientos</li> 
+  </ul> 
+ </div>
+ <section id="attributes">
+  <h2 class="h500">Value parameters</h2>
+  <dl class="attributes">
+   <dt class="body-small">
+    boardSize
+   </dt>
+   <dd class="body-medium">
+    <p>Tamaño del tablero de juego</p> 
+   </dd>
+   <dt class="body-small">
+    stoneFactory
+   </dt>
+   <dd class="body-medium">
+    <p>Fábrica que genera las piezas de Tetris</p> 
+   </dd>
+  </dl>
+  <h2 class="h500">Attributes</h2>
+  <dl class="attributes">
+   <dt class="body-small">
+    Graph
+   </dt>
+   <dd class="body-medium">
+    <div id="inheritance-diagram" class="diagram-class showGraph">
+     <button type="button" class="label-only-button" onclick="zoomOut()">Reset zoom</button><button type="button" class="label-only-button" onclick="hideGraph()">Hide graph</button><button type="button" class="label-only-button" onclick="showGraph()">Show graph</button>
+     <svg id="graph"></svg>
+     <script type="text/dot" id="dot"> digraph g {
+ node0 [id=node0, label="<span style=\"color: #FFFFFF;\">sealed class <a href=\"GameEngine.html\" t=\"n\">GameEngine</a></span>", class="class vertex"];
+node1 [id=node1, label="<span style=\"color: #FFFFFF;\">class <span data-unresolved-link=\"\" t=\"n\">Object</span></span>", class="class vertex"];
+node2 [id=node2, label="<span style=\"color: #FFFFFF;\">class <span data-unresolved-link=\"\" t=\"n\">Any</span></span>", class="class vertex"];
+node3 [id=node3, label="<span style=\"color: #FFFFFF;\">trait <span data-unresolved-link=\"\" t=\"n\">Matchable</span></span>", class="trait vertex"];
+
+
+ node0 -> node1;
+node1 -> node2;
+node1 -> node3;
+node3 -> node2;
+
+}
+</script>
+    </div>
+   </dd>
+   <dt class="body-small">
+    Supertypes
+   </dt>
+   <dd class="body-medium">
+    <div class="mono-small-block supertypes">
+     <div>
+      class <span data-unresolved-link="" t="n">Object</span>
+     </div>
+     <div>
+      trait <span data-unresolved-link="" t="n">Matchable</span>
+     </div>
+     <div>
+      class <span data-unresolved-link="" t="n">Any</span>
+     </div><span></span>
+    </div>
+   </dd>
+  </dl>
+ </section>
+</div>
+<section id="members-list">
+ <h2 class="h500">Members list</h2>
+ <div class="documentableFilter">
+  <div class="filtersContainer"></div>
+  <input class="filterableInput" placeholder="Filter by any phrase" data-test-id="filterBarInput" type="search"><button class="clearButton label-only-button" data-test-id="filterBarClearButton">Clear all</button>
+ </div>
+ <div class="membersList expand">
+  <div class="tabs">
+   <div class="contents">
+    <section id="Value-members">
+     <div data-togglable="Value members" class="tab expand">
+      <div class="member-group-header">
+       <h3 data-togglable="Value members" class="h400">Value members</h3>
+      </div>
+      <section id="Concrete-methods">
+       <div class="documentableList expand">
+        <div class="documentableList-expander">
+         <button class="icon-button show-content expand"></button>
+         <h4 class="groupHeader h200">Concrete methods</h4>
+        </div>
+        <div class="documentableElement" id="IsRunning-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#IsRunning-0" t="n" class="documentableName ">IsRunning</a>: <span data-unresolved-link="" t="t">Boolean</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="cover">
+             <div class="doc"></div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>true si el juego no está en pausa</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="boardIsRunning-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#boardIsRunning-0" t="n" class="documentableName ">boardIsRunning</a>: <span data-unresolved-link="" t="t">Boolean</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="cover">
+             <div class="doc"></div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>true si el tablero está en estado de juego activo</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="continue-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#continue-94c" t="n" class="documentableName ">continue</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Continúa el juego desde la pausa.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Continúa el juego desde la pausa.</p> 
+              <ul> 
+               <li>Actualiza el tiempo total en pausa</li> 
+               <li>Reanuda la música</li> 
+               <li>Reproduce el sonido de continuar</li> 
+              </ul> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="getHoldStone-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#getHoldStone-0" t="n" class="documentableName ">getHoldStone</a>: <span data-unresolved-link="" t="t">Option</span>[<a href="../environment/Stone.html" t="t">Stone</a>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Obtiene la pieza actualmente guardada en hold.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Obtiene la pieza actualmente guardada en hold.</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>Option con la pieza guardada, o None si no hay ninguna</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="getLevel-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#getLevel-0" t="n" class="documentableName ">getLevel</a>: <span data-unresolved-link="" t="t">Int</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Obtiene el nivel actual del juego.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Obtiene el nivel actual del juego.</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>El nivel actual (0-29)</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="getSpeedFactor-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#getSpeedFactor-0" t="n" class="documentableName ">getSpeedFactor</a>: <span data-unresolved-link="" t="t">Int</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Calcula el factor de velocidad basado en el nivel actual.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Calcula el factor de velocidad basado en el nivel actual.</p> 
+              <p>La velocidad aumenta con cada nivel siguiendo una fórmula basada en el NES Tetris:</p> 
+              <ul> 
+               <li>Niveles 0-9: Disminuye de 48 a 3 frames</li> 
+               <li>Niveles 10-19: Disminuye de 28 a 8 frames</li> 
+               <li>Niveles 20-28: Disminuye de 8 a 5 frames</li> 
+               <li>Nivel 29+: "Kill screen" - caída inmediata</li> 
+              </ul> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>Factor de velocidad para el nivel actual</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="holdCurrentStone-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#holdCurrentStone-94c" t="n" class="documentableName ">holdCurrentStone</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Implementa la funcionalidad de "hold" (guardar pieza).</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Implementa la funcionalidad de "hold" (guardar pieza).</p> 
+              <p>Permite guardar la pieza actual para usarla después. Solo se puede usar una vez por turno (hasta que la pieza se fije).</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="isGameRunning-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#isGameRunning-0" t="n" class="documentableName ">isGameRunning</a>: <span data-unresolved-link="" t="t">Boolean</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="cover">
+             <div class="doc"></div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>true si el juego está activo y no en pausa</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="move-fffff66f" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#move-fffff66f" t="n" class="documentableName ">move</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">action</span>: <a href="../environment/Stone.html" t="t">Stone</a><span t="k"> =&gt; </span><a href="../environment/Stone.html" t="t">Stone</a>): <span data-unresolved-link="" t="t">Boolean</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Verifica si un movimiento es válido y lo ejecuta.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Verifica si un movimiento es válido y lo ejecuta.</p> 
+             </div>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               action
+              </dt>
+              <dd class="body-medium">
+               <p>Función que transforma la pieza actual</p> 
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>true si el movimiento fue exitoso, false en caso contrario</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="moveDown-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#moveDown-94c" t="n" class="documentableName ">moveDown</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Intenta mover la pieza activa hacia abajo.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Intenta mover la pieza activa hacia abajo.</p> 
+              <p>Si la pieza no puede moverse más (colisión), la fija en su posición y genera una nueva pieza. Si hay filas completas, las elimina.</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="moveLeft-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#moveLeft-94c" t="n" class="documentableName ">moveLeft</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Mueve la pieza actual hacia la izquierda si es posible. Reproduce un sonido si el movimiento es exitoso.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Mueve la pieza actual hacia la izquierda si es posible. Reproduce un sonido si el movimiento es exitoso.</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="moveRight-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#moveRight-94c" t="n" class="documentableName ">moveRight</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Mueve la pieza actual hacia la derecha si es posible. Reproduce un sonido si el movimiento es exitoso.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Mueve la pieza actual hacia la derecha si es posible. Reproduce un sonido si el movimiento es exitoso.</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="nextStone-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#nextStone-0" t="n" class="documentableName ">nextStone</a>: <a href="../environment/Stone.html" t="t">Stone</a>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="cover">
+             <div class="doc"></div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>La siguiente pieza que aparecerá</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="pause-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#pause-94c" t="n" class="documentableName ">pause</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Pausa el juego.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Pausa el juego.</p> 
+              <ul> 
+               <li>Detiene la música</li> 
+               <li>Guarda el timestamp de inicio de pausa</li> 
+               <li>Reproduce el sonido de pausa</li> 
+              </ul> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="points-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#points-0" t="n" class="documentableName ">points</a>: <span data-unresolved-link="" t="t">List</span>[<a href="../environment/Point.html" t="t">Point</a>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="cover">
+             <div class="doc"></div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>Lista de todos los puntos ocupados en el tablero</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="removeFullRows-6c7" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#removeFullRows-6c7" t="n" class="documentableName ">removeFullRows</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">points</span>: <span data-unresolved-link="" t="t">List</span>[<a href="../environment/Point.html" t="t">Point</a>], <span t="k"></span><span data-unresolved-link="" t="n">height</span>: <span data-unresolved-link="" t="t">Int</span>): (<span data-unresolved-link="" t="t">List</span>[<a href="../environment/Point.html" t="t">Point</a>], <span data-unresolved-link="" t="t">Int</span>)
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Elimina las filas completas del tablero.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Elimina las filas completas del tablero.</p> 
+              <p>Recorre el tablero de abajo hacia arriba, eliminando las filas que están completas y haciendo caer las superiores.</p> 
+             </div>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               height
+              </dt>
+              <dd class="body-medium">
+               <p>Altura actual siendo procesada</p> 
+              </dd>
+              <dt class="body-small">
+               points
+              </dt>
+              <dd class="body-medium">
+               <p>Lista de puntos ocupados en el tablero</p> 
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>Tupla con los puntos actualizados y el número de filas eliminadas</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="restart-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#restart-94c" t="n" class="documentableName ">restart</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Reinicia el juego a su estado inicial.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Reinicia el juego a su estado inicial.</p> 
+              <ul> 
+               <li>Limpia el tablero</li> 
+               <li>Reinicia el nivel</li> 
+               <li>Limpia el historial</li> 
+               <li>Reinicia el hold</li> 
+               <li>Reinicia los contadores de tiempo</li> 
+              </ul> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="rotate-c00" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#rotate-c00" t="n" class="documentableName ">rotate</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">clockwise</span>: <span data-unresolved-link="" t="t">Boolean</span>): <span data-unresolved-link="" t="t">Boolean</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Implementa la lógica de rotación de piezas.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Implementa la lógica de rotación de piezas.</p> 
+             </div>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               clockwise
+              </dt>
+              <dd class="body-medium">
+               <p>true para rotar en sentido horario, false para antihorario</p> 
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>true si la rotación fue exitosa, false en caso contrario</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="rotateLeft-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#rotateLeft-94c" t="n" class="documentableName ">rotateLeft</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Rota la pieza actual hacia la izquierda si es posible. Reproduce un sonido si la rotación es exitosa.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Rota la pieza actual hacia la izquierda si es posible. Reproduce un sonido si la rotación es exitosa.</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="rotateRight-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#rotateRight-94c" t="n" class="documentableName ">rotateRight</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Rota la pieza actual hacia la derecha si es posible. Reproduce un sonido si la rotación es exitosa.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Rota la pieza actual hacia la derecha si es posible. Reproduce un sonido si la rotación es exitosa.</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="statistics-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#statistics-0" t="n" class="documentableName ">statistics</a>: <a href="../environment/Statistics.html" t="t">Statistics</a>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Obtiene las estadísticas actuales del juego.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Obtiene las estadísticas actuales del juego.</p> 
+              <p>Incluye el tiempo pausado en el cálculo del tiempo total.</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>Estadísticas actualizadas</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="stones-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#stones-0" t="n" class="documentableName ">stones</a>: <span data-unresolved-link="" t="t">List</span>[<a href="../environment/Stone.html" t="t">Stone</a>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="cover">
+             <div class="doc"></div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               Returns
+              </dt>
+              <dd class="body-medium">
+               <p>Lista de todas las piezas en el tablero</p> 
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="updateLevel-fffff3b3" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">def </span></span><a href="GameEngine.html#updateLevel-fffff3b3" t="n" class="documentableName ">updateLevel</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">rowsCleared</span>: <span data-unresolved-link="" t="t">Int</span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Actualiza el nivel del juego basado en las líneas completadas.</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Actualiza el nivel del juego basado en las líneas completadas.</p> 
+              <p>El nivel aumenta cada 10 líneas completadas, hasta un máximo de 29.</p> 
+             </div>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">
+               rowsCleared
+              </dt>
+              <dd class="body-medium">
+               <p>Número de filas completadas en la última jugada</p> 
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </section>
+      <section id="Concrete-fields">
+       <div class="documentableList expand">
+        <div class="documentableList-expander">
+         <button class="icon-button show-content expand"></button>
+         <h4 class="groupHeader h200">Concrete fields</h4>
+        </div>
+        <div class="documentableElement" id="board-0" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">var </span></span><a href="GameEngine.html#board-0" t="n" class="documentableName ">board</a>: <a href="../environment/Board.html" t="t">Board</a>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Estado actual del tablero</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Estado actual del tablero</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="boardSize-0">
+         <div class="documentableElement-expander">
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">val </span></span><a href="GameEngine.html#boardSize-0" t="n" class="documentableName ">boardSize</a>: <a href="../environment/Size.html" t="t">Size</a>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="currentLevel-0" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">var </span></span><a href="GameEngine.html#currentLevel-0" t="n" class="documentableName ">currentLevel</a>: <span data-unresolved-link="" t="t">Int</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Nivel actual del juego (0-29)</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Nivel actual del juego (0-29)</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="holdStone-0" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">var </span></span><a href="GameEngine.html#holdStone-0" t="n" class="documentableName ">holdStone</a>: <span data-unresolved-link="" t="t">Option</span>[<a href="../environment/Stone.html" t="t">Stone</a>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Pieza guardada en el hold</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Pieza guardada en el hold</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="holdUsedThisTurn-0" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">var </span></span><a href="GameEngine.html#holdUsedThisTurn-0" t="n" class="documentableName ">holdUsedThisTurn</a>: <span data-unresolved-link="" t="t">Boolean</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Indica si ya se usó el hold en este turno</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Indica si ya se usó el hold en este turno</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="isRunning-0" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">var </span></span><a href="GameEngine.html#isRunning-0" t="n" class="documentableName ">isRunning</a>: <span data-unresolved-link="" t="t">Boolean</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Indica si el juego está activo o en pausa</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Indica si el juego está activo o en pausa</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="pauseStartTime-0" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">var </span></span><a href="GameEngine.html#pauseStartTime-0" t="n" class="documentableName ">pauseStartTime</a>: <span data-unresolved-link="" t="t">Option</span>[<span data-unresolved-link="" t="t">Long</span>]
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="totalPausedTime-0" data-f-visibility="private">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">private </span></span><span class="kind"><span t="k">var </span></span><a href="GameEngine.html#totalPausedTime-0" t="n" class="documentableName ">totalPausedTime</a>: <span data-unresolved-link="" t="t">Long</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Tiempo total acumulado en pausa</p> 
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Tiempo total acumulado en pausa</p> 
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </section>
+     </div>
+    </section>
+   </div>
+  </div>
+ </div>
+</section></div><div id="toc" class="body-small"><div id="toc-container"><span class="toc-title h200">In this article</span><nav class="toc-nav"><ul class="toc-list"><li><a href="#attributes">Value parameters</a></li><li><a href="#members-list">Members list</a><ul><li><a href="#Value-members">Value members</a><ul><li><a href="#Concrete-methods">Concrete methods</a></li><li><a href="#Concrete-fields">Concrete fields</a></li></ul></li></ul></li></ul></nav></div></div></div><div id="footer" class="body-small mobile-footer"><div class="left-container">Generated with</div><div class="right-container"><a href="https://github.com/lampepfl/dotty"><button class="icon-button gh"></button></a><a href="https://twitter.com/scala_lang"><button class="icon-button twitter"></button></a><a href="https://discord.com/invite/scala"><button class="icon-button discord"></button></a><a href="https://gitter.im/scala/scala"><button class="icon-button gitter"></button></a><div class="text"></div></div><div class="text-mobile"></div></div></div></div></body></html>
