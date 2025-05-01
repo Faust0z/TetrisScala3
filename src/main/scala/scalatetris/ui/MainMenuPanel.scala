@@ -81,7 +81,7 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
         isDraggingVolume = true
         val sliderX = e.point.x - volumeSliderRect.x
         val clampedX = math.max(0, math.min(sliderX, volumeSliderRect.width))
-        volumeHandlePosition = (clampedX * 100 / volumeSliderRect.width).toInt
+        volumeHandlePosition = (clampedX * 100 / volumeSliderRect.width)
         AudioManager.setVolume(volumeHandlePosition / 100.0f)
         repaint()
       }
@@ -110,7 +110,7 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
         }
       } else if (volumeSliderRect.contains(e.point)) {
         val sliderX = e.point.x - volumeSliderRect.x
-        volumeHandlePosition = (sliderX * 100 / volumeSliderRect.width).toInt
+        volumeHandlePosition = (sliderX * 100 / volumeSliderRect.width)
         AudioManager.setVolume(volumeHandlePosition / 100.0f)
         repaint()
       } else {
@@ -382,7 +382,7 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     // Mostrar porcentaje
     g.setFont(new Font("Arial", Font.PLAIN, 14))
     g.setColor(Color.WHITE)
-    val percentText = s"${volumeHandlePosition}%"
+    val percentText = s"$volumeHandlePosition%"
     g.drawString(percentText, sliderX + sliderWidth + 10, sliderY + sliderHeight / 2 + 5)
   }
 

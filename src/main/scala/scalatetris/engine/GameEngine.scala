@@ -94,7 +94,7 @@ sealed class GameEngine(val boardSize: Size) {
    */
   private def updateLevel(rowsCleared: Int): Unit = {
     val totalRows = board.statistics.rowsCompleted + rowsCleared
-    val newLevel = math.min((totalRows / 10), 29)
+    val newLevel = math.min(totalRows / 10, 29)
     if (newLevel > currentLevel) {
       currentLevel = newLevel
     }
