@@ -108,8 +108,8 @@ object Tetris {
           Behaviors.same
 
         case HardDrop if engine.isGameRunning =>
-          while (engine.moveDown()) {} // Mover hacia abajo hasta que no pueda más
-          AudioManager.playSpeedSound() // Opcional: sonido de hard drop si querés
+          while (engine.moveDown()) {}
+          AudioManager.playSpeedSound()
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 

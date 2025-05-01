@@ -51,7 +51,6 @@ class SwingDisplay(area: TextArea) extends Display {
    * - '|' y '-' representan los bordes del tablero
    */
   def render(stones: List[Stone], points: List[Point], statistics: Statistics, isGameRunning: Boolean): Unit = {
-    // Versión textual provisional
     val boardText = {
       val width = 10
       val height = 20

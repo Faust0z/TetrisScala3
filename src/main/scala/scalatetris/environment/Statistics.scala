@@ -26,10 +26,7 @@ case class Statistics(startTime: Date, rowsCompleted: Int, score: Int, pendingSc
    * @return Nueva instancia con las estadísticas actualizadas
    */
   def anotherRowHasBeenCompleted(numberOfRows: Int): Statistics = {
-    // Primero incrementamos el contador de filas
     val withIncrementedRows = copy(rowsCompleted = rowsCompleted + numberOfRows)
-
-    // Después agregamos puntos por las líneas completadas si hay alguna
     if (numberOfRows > 0)
       withIncrementedRows.addLinePoints(numberOfRows)
     else
@@ -56,17 +53,16 @@ case class Statistics(startTime: Date, rowsCompleted: Int, score: Int, pendingSc
     copy(pendingScore = pendingScore + (500 * numberOfRows * (numberOfRows + 3) / 2))
 
   /** 
-   * Aplica una porción de los puntos pendientes a la puntuación actual.
-   * Este método permite una animación suave del incremento de puntos.
+   * Aplica una porción de los puntos pendientes a la puntuación actual para que los puntos se
+   * agreguen de a poco en vez de instantáneamente.
    * 
-   * @return Nueva instancia con puntos pendientes parcialmente aplicados
+   * @return Nuevas estadísticas con parte de los puntos agregados.
    */
   def applyPendingPoints(): Statistics = {
     val increment = math.max(100, pendingScore / 4)
     if (pendingScore > 0) copy(score = score + increment, pendingScore = pendingScore - increment) else this
   }
 
-  // Variable para almacenar el tiempo en pausa para esta instancia
   private var pausedTime: Long = 0
   
   /** 
@@ -76,7 +72,6 @@ case class Statistics(startTime: Date, rowsCompleted: Int, score: Int, pendingSc
    * @return Esta instancia con el tiempo en pausa actualizado
    */
   def withPausedTime(newPausedTime: Long): Statistics = {
-    // Actualizar el tiempo en pausa para esta instancia
     pausedTime = newPausedTime
     this
   }
@@ -98,10 +93,8 @@ case class Statistics(startTime: Date, rowsCompleted: Int, score: Int, pendingSc
     var displayPendingScore = ""
     if (pendingScore > 0) displayPendingScore = f" +$pendingScore" else ""
 
-    // Asegurarnos de que la duración no sea negativa
     val adjustedDuration = math.max(0, duration)
 
-    // Formatear el tiempo ajustado
     val formatDate = new Date(adjustedDuration)
 
     s"Filas: $rowsCompleted\nTiempo: ${format.format(formatDate)}\nPuntos: $score$displayPendingScore"

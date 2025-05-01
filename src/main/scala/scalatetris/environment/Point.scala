@@ -62,9 +62,7 @@ case class Point(x: Int, y: Int) {
    * @return Nuevo punto rotado 90 grados en sentido antihorario
    */
   def rotateAroundCenterLeft(center: Point): Point = {
-    val relativePoint = this - center
-    val rotatedPoint = Point(-relativePoint.y, relativePoint.x)
-    rotatedPoint + center
+    center + Point(-(this - center).y, (this - center).x)
   }
 
   /** 
@@ -74,9 +72,7 @@ case class Point(x: Int, y: Int) {
    * @return Nuevo punto rotado 90 grados en sentido horario
    */
   def rotateAroundCenterRight(center: Point): Point = {
-    val relativePoint = this - center
-    val rotatedPoint = Point(relativePoint.y, -relativePoint.x)
-    rotatedPoint + center
+    center + Point((this - center).y, -(this - center).x)
   }
 
   /** 

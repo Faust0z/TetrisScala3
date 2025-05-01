@@ -49,7 +49,6 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
   /** Posición actual del control de volumen (0-100) */
   private var volumeHandlePosition: Int = (AudioManager.getVolume * 100).toInt
   
-  // Registrar eventos de mouse y teclado
   listenTo(mouse.clicks, mouse.moves, keys)
   
   /** 
@@ -64,7 +63,6 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     case e: MouseMoved =>
       updateHoveredButton(e.point)
       if (showControls) {
-        // Verificar si el mouse está sobre el botón de volver
         val panelWidth = math.min(size.width - 100, 600)
         val panelHeight = size.height - 200
         val panelX = (size.width - panelWidth) / 2
@@ -106,26 +104,24 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
         val backButtonX = panelX + (panelWidth - backButtonWidth) / 2
         val backButtonY = panelY + panelHeight - 60
         
-        // Si se hace clic en el botón de volver
         if (e.point.x >= backButtonX && e.point.x <= (backButtonX + backButtonWidth) &&
             e.point.y >= backButtonY && e.point.y <= (backButtonY + backButtonHeight)) {
           showControls = false
           repaint()
         }
       } else if (volumeSliderRect.contains(e.point)) {
-        // Clic en el control de volumen
         val sliderX = e.point.x - volumeSliderRect.x
         volumeHandlePosition = (sliderX * 100 / volumeSliderRect.width).toInt
         AudioManager.setVolume(volumeHandlePosition / 100.0f)
         repaint()
       } else {
         hoveredButton match {
-          case Some(0) => onStartGame() // JUGAR
+          case Some(0) => onStartGame()
           case Some(1) => 
             showControls = true
             repaint()
-          case Some(2) => onQuit() // SALIR
-          case _ => // Nada
+          case Some(2) => onQuit()
+          case _ =>
         }
       }
       
@@ -148,12 +144,11 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
    */
   override def paintComponent(g: Graphics2D): Unit = {
     super.paintComponent(g)
-    
-    // Configurar renderizado
+
+    // Mejora la calidad más que nada de los textos
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
     g.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
     
-    // Fondo
     val gradient = new GradientPaint(0, 0, backgroundColor, size.width, size.height, new Color(0, 0, 50))
     g.setPaint(gradient)
     g.fillRect(0, 0, size.width, size.height)
@@ -175,59 +170,49 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
    */
   private def drawLogo(g: Graphics2D): Unit = {
     val title = "TETRIS"
-    
-    // Configuración de tamaño y posición del logo
+
     val titleSize = math.min(size.width / 8, 100)
     g.setFont(new Font("Impact", Font.BOLD, titleSize))
-    
+
     val fm = g.getFontMetrics
-    val titleWidth = fm.stringWidth(title)
+    val titleWidth = fm.stringWidth(title + 2)
     val x = (size.width - titleWidth) / 2
     val y = size.height / 4
-    
-    // Efecto de sombra para el título
+
     g.setColor(Color.BLACK)
     g.drawString(title, x + 4, y + 4)
-    
-    // Dibujar letras con efectos de bloques de Tetris
+
     val letters = title.toCharArray
-    
-    // Calcular el ancho total que ocuparán todas las letras
+
     val totalLetterWidth = letters.map(letter => fm.charWidth(letter)).sum
-    
-    // Calcular el espacio extra entre letras para distribuirlas uniformemente
+
     val extraSpace = (titleWidth - totalLetterWidth) / (letters.length - 1)
-    
+
     var currentX = x
-    
+
     for (i <- letters.indices) {
       val letterWidth = fm.charWidth(letters(i))
-      
-      // Colores diferentes para cada letra
+
       val letterColor = i match {
-        case 0 => new Color(255, 0, 0)      // T: Rojo
-        case 1 => new Color(255, 165, 0)    // E: Naranja
-        case 2 => new Color(0, 255, 255)    // T: Cyan
-        case 3 => new Color(0, 255, 0)      // R: Verde
-        case 4 => new Color(255, 0, 255)    // I: Magenta
-        case 5 => new Color(255, 255, 0)    // S: Amarillo
+        case 0 => new Color(255, 0, 0)      // T
+        case 1 => new Color(255, 165, 0)    // E
+        case 2 => new Color(0, 255, 255)    // T
+        case 3 => new Color(0, 255, 0)      // R
+        case 4 => new Color(255, 0, 255)    // I
+        case 5 => new Color(255, 255, 0)    // S
         case _ => Color.WHITE
       }
-      
-      // Corregir la posición de la letra I para alinearla correctamente
-      val letterY = if (i == 4) y - 2 else y  // Ajustar un poco la posición de la I
-      
+      val letterY = if (i == 4) y - 2 else y
+
       g.setColor(letterColor)
       g.drawString(letters(i).toString, currentX, letterY)
-      
-      // Añadir un borde de bloque a cada letra
+
       g.setStroke(new BasicStroke(2))
       g.drawRect(currentX - 2, y - titleSize + 10, letterWidth + 4, titleSize)
-      
-      // Avanzar a la siguiente posición con espaciado uniforme
+
       currentX += letterWidth + extraSpace
     }
-    
+
     // Subtítulo
     g.setFont(new Font("Arial", Font.PLAIN, titleSize / 3))
     val subtitle = "SCALA EDITION"
@@ -252,16 +237,13 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
       val y = startY + button.index * spacing
       button.update((size.width - buttonWidth) / 2, y, buttonWidth, buttonHeight)
       
-      // Fondo del botón
       g.setColor(if (hoveredButton.contains(button.index)) buttonColor.brighter else buttonColor)
       g.fillRect(button.x, button.y, button.width, button.height)
       
-      // Borde del botón
       g.setColor(if (hoveredButton.contains(button.index)) highlightColor else Color.GRAY)
       g.setStroke(new BasicStroke(3))
       g.drawRect(button.x, button.y, button.width, button.height)
       
-      // Texto del botón
       val buttonFontSize = buttonHeight / 2
       g.setFont(new Font("Impact", Font.BOLD, buttonFontSize))
       val fm = g.getFontMetrics
@@ -269,11 +251,9 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
       val textX = button.x + (button.width - textWidth) / 2
       val textY = button.y + (button.height + buttonFontSize) / 2
       
-      // Sombra del texto
       g.setColor(Color.BLACK)
       g.drawString(button.text, textX + 2, textY + 2)
       
-      // Texto principal
       g.setColor(if (hoveredButton.contains(button.index)) highlightColor else Color.WHITE)
       g.drawString(button.text, textX, textY)
     }
@@ -292,10 +272,8 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     val panelX = (size.width - panelWidth) / 2
     val panelY = 100
     
-    // Panel de fondo
     g.setColor(new Color(0, 0, 40, 220))
     g.fillRect(panelX, panelY, panelWidth, panelHeight)
-    
     g.setColor(highlightColor)
     g.setStroke(new BasicStroke(3))
     g.drawRect(panelX, panelY, panelWidth, panelHeight)
@@ -306,13 +284,11 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     val title = "CONTROLES"
     val fm = g.getFontMetrics
     val titleWidth = fm.stringWidth(title)
-    
     g.setColor(Color.BLACK)
     g.drawString(title, panelX + (panelWidth - titleWidth) / 2 + 2, panelY + 50 + 2)
     g.setColor(highlightColor)
     g.drawString(title, panelX + (panelWidth - titleWidth) / 2, panelY + 50)
     
-    // Controles
     val controls = List(
       ("A", "Mover izquierda"),
       ("D", "Mover derecha"),
@@ -326,51 +302,36 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
       ("ESC", "Volver al menú"),
       ("F11", "Pantalla completa (in-game)")
     )
-    
     val fontSize = 20
     g.setFont(new Font("Arial", Font.BOLD, fontSize))
-    
     var yPos = panelY + 120
     val spacing = 40
-    val keyWidth = 50  // Aumentado para acomodar teclas más largas como "ESC" y "F11"
+    val keyWidth = 50
     
     controls.foreach { case (key, action) =>
-      // Fondo de la tecla
       g.setColor(new Color(40, 40, 40))
       g.fillRect(panelX + 50, yPos - fontSize, keyWidth, fontSize + 10)
-      
-      // Borde de la tecla
       g.setColor(new Color(100, 100, 100))
       g.setStroke(new BasicStroke(1))
       g.drawRect(panelX + 50, yPos - fontSize, keyWidth, fontSize + 10)
-      
-      // Texto de la tecla
       g.setColor(Color.WHITE)
       g.drawString(key, panelX + 50 + (keyWidth - g.getFontMetrics.stringWidth(key)) / 2, yPos)
-      
-      // Acción
       g.setColor(Color.LIGHT_GRAY)
       g.drawString(action, panelX + 50 + keyWidth + 20, yPos)
       
       yPos += spacing
     }
     
-    // Botón para volver al menú en lugar de solo texto
     val backButtonWidth = 200
     val backButtonHeight = 40
     val backButtonX = panelX + (panelWidth - backButtonWidth) / 2
     val backButtonY = panelY + panelHeight - 60
     
-    // Fondo del botón - ahora con efecto hover
     g.setColor(if (backButtonHovered) new Color(0, 0, 100) else new Color(0, 0, 60))
     g.fillRect(backButtonX, backButtonY, backButtonWidth, backButtonHeight)
-    
-    // Borde del botón - ahora con efecto hover
     g.setColor(if (backButtonHovered) highlightColor.brighter else highlightColor)
     g.setStroke(new BasicStroke(2))
     g.drawRect(backButtonX, backButtonY, backButtonWidth, backButtonHeight)
-    
-    // Texto del botón
     g.setFont(new Font("Impact", Font.BOLD, 20))
     val backText = "VOLVER AL MENÚ"
     val backWidth = g.getFontMetrics.stringWidth(backText)
@@ -394,36 +355,26 @@ class MainMenuPanel(onStartGame: () => Unit, onQuit: () => Unit) extends Panel {
     val sliderX = (size.width - sliderWidth) / 2
     val sliderY = size.height - 70
     
-    // Actualizar rectángulo del slider para detección de eventos
     volumeSliderRect = new Rectangle(sliderX, sliderY - 5, sliderWidth, sliderHeight + 10)
     
-    // Dibujar etiqueta "VOLUMEN"
     g.setFont(new Font("Arial", Font.BOLD, 16))
     g.setColor(Color.WHITE)
     val volumeText = "VOLUMEN"
     val textWidth = g.getFontMetrics.stringWidth(volumeText)
     g.drawString(volumeText, sliderX + (sliderWidth - textWidth) / 2, sliderY - 15)
     
-    // Dibujar fondo del slider
     g.setColor(new Color(0, 0, 60))
     g.fillRect(sliderX, sliderY, sliderWidth, sliderHeight)
-    
-    // Dibujar borde del slider
     g.setColor(highlightColor)
     g.setStroke(new BasicStroke(1))
     g.drawRect(sliderX, sliderY, sliderWidth, sliderHeight)
-    
-    // Dibujar nivel de volumen
     g.setColor(highlightColor)
     val volumeWidth = (sliderWidth * volumeHandlePosition / 100.0).toInt
     g.fillRect(sliderX, sliderY, volumeWidth, sliderHeight)
-    
-    // Dibujar control deslizante
     val handleWidth = 10
     val handleHeight = 20
     val handleX = sliderX + volumeWidth - handleWidth / 2
     val handleY = sliderY - (handleHeight - sliderHeight) / 2
-    
     g.setColor(Color.WHITE)
     g.fillRect(handleX, handleY, handleWidth, handleHeight)
     g.setColor(Color.GRAY)

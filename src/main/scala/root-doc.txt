@@ -28,13 +28,15 @@ El proyecto está organizado en los siguientes paquetes principales:
 
 ## Características Principales
 
-- Implementación funcional usando Scala 3
-- Sistema de actores con Akka
-- Interfaz gráfica con Scala Swing
-- Efectos visuales y sonoros
-- Sistema de puntuación y estadísticas
-- Controles personalizables
-- Modo pantalla completa
+- Implementación funcional usando Scala 3.
+- Manejo de dependencias usando sbt. 
+- Sistema de actores con Akka.
+- Interfaz gráfica con Scala Swing.
+- Integración de documentación usando ScalaDocs.
+- Efectos visuales y sonoros.
+- Sistema de puntuación y estadísticas.
+- Modo pantalla completa.
+- Generación de ejecutables en formato “.jar” para la distribución y fácil ejecución del juego (Versión de Java 20+ recomendada).
 
 ## Cómo Jugar
 

@@ -12,7 +12,6 @@ import javax.sound.sampled.{AudioInputStream, AudioSystem, Clip, FloatControl}
  * - Gestionar los recursos de audio
  */
 object AudioManager {
-  // Clips de audio para diferentes sonidos
   private var musicClip: Option[Clip] = None
   private var gameOverClip: Option[Clip] = None
   private var collisionClip: Option[Clip] = None
@@ -40,10 +39,8 @@ object AudioManager {
    * @param volume Nuevo nivel de volumen (entre 0.0 y 1.0)
    */
   def setVolume(volume: Float): Unit = {
-    // Asegurar que el volumen esté entre 0.0 y 1.0
     volumeLevel = math.min(1.0f, math.max(0.0f, volume))
     
-    // Aplicar el volumen a todos los clips
     applyVolumeToClip(musicClip)
     applyVolumeToClip(gameOverClip)
     applyVolumeToClip(collisionClip)
@@ -65,9 +62,7 @@ object AudioManager {
     clip.foreach { c =>
       if (c.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
         val gainControl = c.getControl(FloatControl.Type.MASTER_GAIN).asInstanceOf[FloatControl]
-        // Convertir de escala lineal (0.0 a 1.0) a escala logarítmica de decibelios
         val gainValue = if (volumeLevel > 0) 20.0f * math.log10(volumeLevel).toFloat else gainControl.getMinimum
-        // Asegurar que el valor esté dentro del rango admitido
         val clampedGainValue = math.min(gainControl.getMaximum, math.max(gainControl.getMinimum, gainValue))
         gainControl.setValue(clampedGainValue)
       }

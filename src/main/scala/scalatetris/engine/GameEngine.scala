@@ -2,7 +2,6 @@ package scalatetris.engine
 
 import scalatetris.environment._
 import scalatetris.AudioManager
-import scala.util.Try
 
 /**
  * Motor principal del juego Tetris que maneja toda la lógica y el estado del juego.
@@ -68,7 +67,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
    * - Comprobación de fin de juego
    */
   def moveDown(): Boolean = {
-    // No permitas movimientos si el juego ya terminó
     if (!board.isGameRunning) return false
 
       if (!move(_.moveDown())) {
@@ -93,9 +91,9 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
           AudioManager.stopMusic()
           AudioManager.playGameOverSound()
         }
-        false // <-- No se pudo mover más
+        false
       } else {
-        true // <-- Se movió exitosamente
+        true
       }
   }
 
@@ -110,7 +108,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
    */
   private def updateLevel(rowsCleared: Int): Unit = {
     val totalRows = board.statistics.rowsCompleted + rowsCleared
-    val newLevel = math.min((totalRows / 10).toInt, 29) // Máximo nivel 29
+    val newLevel = math.min((totalRows / 10), 29)
     if (newLevel > currentLevel) {
       currentLevel = newLevel
     }
@@ -139,26 +137,21 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     // Obtiene el tiempo total jugado (en milisegundos) y lo convierte en minutos
     val elapsedMinutes = obtenerTiempoDeJuego / 60000
 
-    // Aumenta la velocidad en que caen las fichas
     val timeBasedSpeedBonus = (elapsedMinutes * 8).toInt
 
-    // Calcular la velocidad base solo según el nivel actual
     val baseSpeed = if (currentLevel < 10) {
-      48 - currentLevel * 5 // Para niveles de 0 a 9: cada nivel baja 5 frames
+      48 - currentLevel * 5
     } else if (currentLevel < 20) {
-      28 - (currentLevel - 10) * 2 // Para niveles de 10 a 19: cada nivel baja 2 frames
+      28 - (currentLevel - 10) * 2
     } else if (currentLevel < 29) {
-      8 - (currentLevel - 20) / 3 // Para niveles de 20 a 28: baja 1 frame cada 3 niveles
+      8 - (currentLevel - 20) / 3
     } else {
-      1 // Nivel 29 o superior: caída casi instantánea (1 frame)
+      1
     }
 
-    // Ajustar la velocidad base restando el bonus de tiempo jugado,
-    // asegurándose que nunca sea menor a 1 frame
     math.max(baseSpeed - timeBasedSpeedBonus, 1)
   }
 
-  // Devuelve el tiempo jugado en milisegundos, descontando las pausas
   def obtenerTiempoDeJuego: Long = {
     val now = System.currentTimeMillis()
 
@@ -182,7 +175,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
    * @return true si el movimiento fue exitoso, false si fue bloqueado
    */
   private def move(action: Stone => Stone): Boolean = {
-    // No permitas movimientos si el juego ya terminó
     if (!board.isGameRunning) return false
     
     val oldStone = board.stones.head
@@ -219,7 +211,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     }
   }
 
-  // Se define la rotación hacia la izquierda o la derecha según el atributo. Si es un cuadrado no se rota
   private def rotate(clockwise: Boolean): Boolean = {
     val currentStone = board.stones.head
     if (currentStone.stoneType == "Square") return false
@@ -259,7 +250,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     }
   }
 
-  // Hold/guardar pieza actual
   def holdCurrentStone(): Unit = {
     if (!board.isGameRunning || holdUsedThisTurn) return
 
@@ -270,11 +260,8 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       val newCurrentStone = holdStone.get.toTopCenter(Point(board.size.width / 2, 0))
       holdStone = Some(currentStone.resetPosition())
 
-      // Actualizar el tablero con la nueva pieza actual
       if (!board.stones.tail.exists(_.doesCollide(newCurrentStone))) {
-        // Crear una nueva lista de piedras sin la actual
         val remainingStones = board.stones.tail
-        // Agregar la piedra del hold como la activa
         board = board.updateStones(newCurrentStone :: remainingStones)
         history = board :: history
         holdUsedThisTurn = true
@@ -282,7 +269,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     } else {
       // Primera vez que se usa hold
       holdStone = Some(currentStone.resetPosition())
-      // Actualizar el tablero solo con las piezas fijas
       val remainingStones = board.stones.tail
       board = board.updateStones(remainingStones)
       board = board.forceNewStone(stoneFactory.createRandomStone())
@@ -290,7 +276,6 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
       holdUsedThisTurn = true
     }
 
-    // Reproducir un sonido cuando se guarda una pieza
     AudioManager.playSideSound()
   }
   
@@ -340,9 +325,7 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
    * @return true si el juego está pausado, false si está en ejecución
    */
   def IsRunning: Boolean = isRunning
-
-  //si esta o no corriendo
-
+  
   /**
    * Verifica si el juego está en ejecución activa.
    *
@@ -373,11 +356,9 @@ sealed class GameEngine(val boardSize: Size, val stoneFactory: StoneFactory) {
     val now = System.currentTimeMillis()
 
     if (!isRunning && pauseStartTime.isDefined) {
-      // Si estamos en pausa y aún no hemos actualizado totalPausedTime para esta pausa
       val pauseDuration = now - pauseStartTime.get
       board.statistics.withPausedTime(totalPausedTime + pauseDuration)
     } else {
-      // Si no estamos en pausa, o si ya actualizamos totalPausedTime
       board.statistics.withPausedTime(totalPausedTime)
     }
   }
