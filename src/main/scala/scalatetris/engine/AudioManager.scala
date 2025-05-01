@@ -1,4 +1,4 @@
-package scalatetris
+package scalatetris.engine
 
 import javax.sound.sampled.{AudioInputStream, AudioSystem, Clip, FloatControl}
 

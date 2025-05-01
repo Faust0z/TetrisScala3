@@ -1,4 +1,4 @@
-package scalatetris
+package scalatetris.engine
 
 /** 
  * Enumeración que define los posibles eventos de interacción del usuario.

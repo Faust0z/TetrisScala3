@@ -1,10 +1,11 @@
-package scalatetris
+package scalatetris.ui
 
+import scalatetris.Main
 import scalatetris.engine.GameEngine
-import scalatetris.environment._
+import scalatetris.components.*
 
-import scala.swing._
-import java.awt.{Color, Graphics2D, GradientPaint, BasicStroke, GraphicsDevice, GraphicsEnvironment}
+import java.awt.{BasicStroke, Color, GradientPaint, Graphics2D}
+import scala.swing.*
 
 /** 
  * AVISO: Debido a cómo funciona ScalaDocs, no podemos excluir los métodos herados de ScalaSwing, por lo que se 

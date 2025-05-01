@@ -1,4 +1,4 @@
-package scalatetris.environment
+package scalatetris.ui
 
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}

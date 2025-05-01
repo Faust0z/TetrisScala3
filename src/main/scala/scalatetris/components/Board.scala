@@ -1,4 +1,6 @@
-package scalatetris.environment
+package scalatetris.components
+
+import scalatetris.ui.Statistics
 
 import java.util.Calendar
 

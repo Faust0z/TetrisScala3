@@ -1,4 +1,4 @@
-package scalatetris.environment
+package scalatetris.components
 
 /** 
  * Clase que representa las dimensiones de un área rectangular.

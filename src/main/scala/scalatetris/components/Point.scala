@@ -1,4 +1,4 @@
-package scalatetris.environment
+package scalatetris.components
 
 /** 
  * Clase que representa un punto en el espacio bidimensional.

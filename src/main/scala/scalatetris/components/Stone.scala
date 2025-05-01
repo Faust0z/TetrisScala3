@@ -1,4 +1,4 @@
-package scalatetris.environment
+package scalatetris.components
 
 /** 
  * Objeto compañero para la clase Stone que proporciona un constructor simplificado.
