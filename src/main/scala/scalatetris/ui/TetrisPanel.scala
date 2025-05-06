@@ -57,6 +57,9 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
 
   private var lastGameState: Boolean = true
 
+  /**
+   * Redimensiona el tamaño del bloque y los márgenes para adaptarse al tamaño actual del panel.
+   */
   def resizeUI(): Unit = {
     val availableWidth = size.width
     val availableHeight = size.height
@@ -137,12 +140,22 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     }
   }
 
+  /**
+   * Dibuja el fondo con un degradado azul oscuro.
+   *
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawBackground(g: Graphics2D): Unit = {
     val gradient = new GradientPaint(0, 0, backgroundColor, size.width, size.height, new Color(0, 0, 50))
     g.setPaint(gradient)
     g.fillRect(0, 0, size.width, size.height)
   }
 
+  /**
+   * Dibuja la cuadrícula del tablero de juego.
+   *
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawGrid(g: Graphics2D): Unit = {
     g.setColor(gridColor)
     // Líneas verticales
@@ -153,6 +166,11 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
       g.drawLine(offsetX, offsetY + y * blockSize, offsetX + engine.boardSize.width * blockSize, offsetY + y * blockSize)
   }
 
+  /**
+   * Dibuja el borde alrededor del tablero.
+   *
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawBorder(g: Graphics2D): Unit = {
     val borderWidth = 2
     g.setColor(borderColor)
@@ -165,6 +183,11 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     )
   }
 
+  /**
+   * Dibuja todas las piezas activas en el tablero.
+   *
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawStones(g: Graphics2D): Unit = {
     val stones = engine.stones
     stones.foreach { stone =>
@@ -173,6 +196,15 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     }
   }
 
+  /**
+   * Dibuja un bloque individual con sombras y brillo.
+   *
+   * @param g           Contexto gráfico
+   * @param x           Coordenada X del bloque en la cuadrícula
+   * @param y           Coordenada Y del bloque en la cuadrícula
+   * @param mainColor   Color principal del bloque
+   * @param shadowColor Color de sombra del bloque
+   */
   private def fillBlock(g: Graphics2D, x: Int, y: Int, mainColor: Color, shadowColor: Color): Unit = {
     val blockX = offsetX + x * blockSize
     val blockY = offsetY + y * blockSize
@@ -191,6 +223,11 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     g.fillRect(blockX + 2, blockY + 2, 2, blockSize - 6)
   }
 
+  /**
+   * Dibuja el panel de las estadisticas.
+   *
+   * @param g Contexto gráfico donde dibujar
+   */
   private def drawStatisticsPanel(g: Graphics2D): Unit = {
     val stats = engine.statistics
     val statX = offsetX + engine.boardSize.width * blockSize + 30
@@ -227,6 +264,12 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     g.setFont(new java.awt.Font("Impact", java.awt.Font.BOLD, fontSize))
     statY += (10 * scaleFactor).toInt
 
+    /**
+     * Dibuja las lineas por cada estadistica.
+     *
+     * @param label es el nombre de la estadistica
+     * @param value es el valor de la estadistica
+     */
     def drawStatLine(label: String, value: String): Unit = {
       // Sombra
       g.setColor(new Color(0, 0, 0))
