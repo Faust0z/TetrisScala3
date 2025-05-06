@@ -153,12 +153,9 @@ object Main extends SimpleSwingApplication {
             case Key.D => tetris ! Tetris.Right
             case Key.Q => tetris ! Tetris.RotateLeft
             case Key.E => tetris ! Tetris.RotateRight
-            case Key.R => if (isPaused==true){ tetris ! Tetris.Restart
-                          isPaused= false }
+            case Key.R => tetris ! Tetris.Restart
             case Key.P => tetris ! Tetris.Pause
-                          isPaused=true
             case Key.C => tetris ! Tetris.Continue
-                          isPaused=false
             case Key.H => tetris ! Tetris.Hold
             case Key.Space => tetris ! Tetris.HardDrop
 

@@ -74,7 +74,7 @@ object Tetris {
           display.render(engine.stones, engine.points, engine.statistics, engine.isGameRunning)
           Behaviors.same
 
-        case Restart =>
+        case Restart  if (engine.isGameRunning == false)  =>
           engine.restart()
           AudioManager.stopMusic()
           AudioManager.playMusic()
