@@ -39,7 +39,9 @@ sealed class GameEngine(val boardSize: Size) {
   /** Tiempo total que el juego ha estado en pausa (en milisegundos) */
   private var totalPausedTime: Long = 0
   //Obtiene el tiempo de juego
-  private val gameStartTime: Long = System.currentTimeMillis()
+  private var gameStartTime: Long = System.currentTimeMillis()
+
+
 
   /**
    * Intenta mover la pieza activa hacia abajo. Si no puede moverse (colisión),
@@ -290,6 +292,9 @@ sealed class GameEngine(val boardSize: Size) {
     holdUsedThisTurn = false
     totalPausedTime = 0
     pauseStartTime = None
+    currentLevel = 0
+    gameStartTime = System.currentTimeMillis()
+
   }
 
   /**
@@ -371,7 +376,6 @@ sealed class GameEngine(val boardSize: Size) {
       totalPausedTime += now - pauseStartTime.get
       pauseStartTime = None
     }
-    
     isRunning = true
     AudioManager.resumeMusic()
     AudioManager.playResumeSound()

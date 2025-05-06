@@ -51,6 +51,7 @@ object Main extends SimpleSwingApplication {
   /** Estado cuando se está jugando activamente */
   private case object PlayingState extends GameState
 
+
   /**
    * Crea y configura la ventana principal de la aplicación.
    *
@@ -84,6 +85,9 @@ object Main extends SimpleSwingApplication {
 
     var tetrisActorSystem: Option[ActorSystem[Tetris.Command]] = None
     var gamePanel: Option[TetrisPanel] = None
+
+    // Variable para saber si esta pausado
+    var isPaused: Boolean = false
 
     /**
      * Inicia el juego creando el sistema de actores, panel de juego y configurando eventos.
