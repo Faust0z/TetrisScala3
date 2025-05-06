@@ -323,7 +323,6 @@ class TetrisPanel(engine: GameEngine, initialBlockSize: Int = 30) extends Panel 
     g.setColor(shadowColor)
     g.fillRect(x.toInt, y.toInt, size, size)
     
-    // Color principal con efecto de brillo
     g.setColor(mainColor)
     g.fillRect(x.toInt + 2, y.toInt + 2, size - 4, size - 4)
     

@@ -2,8 +2,8 @@ package scalatetris
 
 import akka.actor.typed.ActorSystem
 import akka.util.Timeout
-import scalatetris.engine.{AudioManager, GameEngine, Tetris}
 import scalatetris.components.*
+import scalatetris.engine.{AudioManager, GameEngine, Tetris}
 import scalatetris.ui.{MainMenuPanel, TetrisPanel}
 
 import java.awt.event.{ComponentAdapter, ComponentEvent}
@@ -15,37 +15,45 @@ import scala.swing.event.{Key, KeyPressed}
 
 /**
  * Objeto principal que inicia y gestiona la aplicación Tetris.
- * 
+ *
  * Este objeto extiende SimpleSwingApplication, proporcionando la estructura básica
  * para una aplicación gráfica en Scala. Gestiona la alternancia entre el menú principal
  * y la pantalla de juego, controla la música, maneja eventos de teclado y pantalla completa.
  */
 object Main extends SimpleSwingApplication {
   private var highScore: Int = 0
+
+  /**
+   * Devuelve la puntuación más alta registrada.
+   *
+   * @return El valor del récord personal
+   */
   def getHighScore: Int = highScore
 
-   /**
+  /**
    * Obtiene el tamaño de la pantalla actual del sistema.
-   * 
+   *
    * @return Dimensión de la pantalla actual
    */
   private def getScreenSize: AWTDimension = {
     Toolkit.getDefaultToolkit.getScreenSize
   }
 
-  /** 
+  /**
    * Estados del juego representados como tipos algebraicos.
    * Determinan si se muestra el menú o se está jugando.
    */
   private sealed trait GameState
+
   /** Estado cuando se muestra el menú principal */
   private case object MenuState extends GameState
+
   /** Estado cuando se está jugando activamente */
   private case object PlayingState extends GameState
-  
+
   /**
    * Crea y configura la ventana principal de la aplicación.
-   * 
+   *
    * @return Frame que contiene la interfaz principal
    */
   def top: Frame = {
@@ -55,7 +63,7 @@ object Main extends SimpleSwingApplication {
     val frameWidth = (screenSize.width * 0.8).toInt
     val frameHeight = (screenSize.height * 0.8).toInt
 
-    // Crear un CardLayout para alternar entre menú y juego
+    // CardLayout para alternar entre menú y juego
     val cardPanel = new Panel {
       preferredSize = new Dimension(frameWidth, frameHeight)
     }
@@ -76,10 +84,10 @@ object Main extends SimpleSwingApplication {
 
     var tetrisActorSystem: Option[ActorSystem[Tetris.Command]] = None
     var gamePanel: Option[TetrisPanel] = None
-    
+
     /**
      * Inicia el juego creando el sistema de actores, panel de juego y configurando eventos.
-     * 
+     *
      * Esta función configura el motor del juego, crea el sistema de actores para procesar
      * comandos, establece las reacciones a eventos de teclado y actualiza la interfaz.
      */
@@ -98,19 +106,19 @@ object Main extends SimpleSwingApplication {
 
       panel.focusable = true
       panel.requestFocus()
-      
+
       /**
        * Trait Display requerido por Tetris para renderizar el estado del juego.
        */
       trait Display {
         /**
          * Renderiza el estado actual del juego.
-         * 
+         *
          * @param data Información del estado que se renderizará
          */
         def render(data: String): Unit
       }
-      
+
       /**
        * Implementación de Display que no realiza acciones visuales.
        * Se utiliza porque el renderizado gráfico se maneja a través de TetrisPanel.
@@ -175,10 +183,10 @@ object Main extends SimpleSwingApplication {
 
       AudioManager.playMusic()
     }
-    
+
     /**
      * Muestra el menú principal, deteniendo cualquier juego en progreso.
-     * 
+     *
      * Esta función termina el sistema de actores del juego si existe,
      * y configura el panel para mostrar el menú principal con botones
      * para iniciar el juego o salir.
@@ -205,7 +213,6 @@ object Main extends SimpleSwingApplication {
       menuPanel.requestFocusInWindow()
     }
 
-    // Mostrar el menú principal al iniciar
     showMainMenu()
 
     frame
@@ -213,8 +220,8 @@ object Main extends SimpleSwingApplication {
 
   /**
    * Alterna entre modo pantalla completa y ventana normal.
-   * 
-   * @param frame El marco principal que se mostrará en pantalla completa
+   *
+   * @param frame  El marco principal que se mostrará en pantalla completa
    * @param device El dispositivo gráfico que gestionará la pantalla completa
    */
   private def toggleFullScreen(frame: MainFrame, device: GraphicsDevice): Unit = {
@@ -227,7 +234,7 @@ object Main extends SimpleSwingApplication {
 
   /**
    * Actualiza y guarda la puntuación más alta si la puntuación actual la supera.
-   * 
+   *
    * @param score La puntuación actual para comparar con el récord
    */
   def updateHighScore(score: Int): Unit = {
@@ -235,10 +242,4 @@ object Main extends SimpleSwingApplication {
       highScore = score
     }
   }
-
-  /**
-   * Devuelve la puntuación más alta registrada.
-   * 
-   * @return El valor del récord personal
-   */
 }
